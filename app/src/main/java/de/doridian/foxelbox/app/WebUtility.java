@@ -76,11 +76,23 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
     private String[] lastArgs;
 
     protected void retry() {
-        execute(lastArgs);
+        final WebUtility _this = this;
+        AsyncTask<String, Void, JSONObject> retryWebUtility = new AsyncTask<String, Void, JSONObject>() {
+            @Override
+            protected JSONObject doInBackground(String... strings) {
+                return _this.doInBackground(strings);
+            }
+
+            @Override
+            protected void onPostExecute(JSONObject result) {
+                _this.onPostExecute(result);
+            }
+        };
+        retryWebUtility.execute(lastArgs);
     }
 
     @Override
-    protected JSONObject doInBackground(String... strings) {
+    protected final JSONObject doInBackground(String... strings) {
         lastArgs = strings;
         String url, data;
         url = strings[0];

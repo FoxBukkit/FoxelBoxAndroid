@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -81,18 +82,6 @@ public class MainActivity extends ActionBarActivity
         }.execute();
     }
 
-    public void sendChatMessage(View view) {
-        EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
-        final CharSequence message = msgTextField.getText();
-        msgTextField.setText("");
-        new WebUtility(getApplicationContext()) {
-            @Override
-            protected void onSuccess(JSONObject result) throws JSONException {
-                Toast.makeText(context, "DBG SUCCESS: " + result.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }.execute("message/send", WebUtility.encodeData("message", message));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
@@ -115,11 +104,34 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        Log.e("foxelbox", "0");
+
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Fragment fragment = null;
+
+        switch(position + 1) {
+            case 1:
+                fragment = new ChatFragment();
+                break;
+            case 2:
+                fragment = PlaceholderFragment.newInstance(position + 1);
+                break;
+            case 3:
+                fragment = PlaceholderFragment.newInstance(position + 1);
+                break;
+            default:
+                return;
+        }
+
+        Log.e("foxelbox", "A");
+
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
+
+        Log.e("foxelbox", "B");
     }
 
     public void onSectionAttached(int number) {
@@ -174,7 +186,7 @@ public class MainActivity extends ActionBarActivity
                 case 3:
                     break;
             }
-            View rootView = inflater.inflate(fragment, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
 
