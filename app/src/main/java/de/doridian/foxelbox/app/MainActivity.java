@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -87,7 +88,7 @@ public class MainActivity extends ActionBarActivity
         new WebUtility(getApplicationContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
-
+                Toast.makeText(context, "DBG SUCCESS: " + result.toString(), Toast.LENGTH_SHORT).show();
             }
         }.execute("message/send", WebUtility.encodeData("message", message));
     }

@@ -17,13 +17,13 @@ public class LoginUtility extends WebUtility {
     }
 
     public void execute() {
-        execute("login", WebUtility.encodeData(false, "username", username, "password", password));
+        execute("login/auth", WebUtility.encodeData(false, "username", username, "password", password));
     }
 
     @Override
     protected void onSuccess(JSONObject result) throws JSONException {
-        session_id = result.getString("session_id");
-        if(this.runOnSuccess != null)
-            this.runOnSuccess.retry();
+        super.onSuccess(result);
+        if(runOnSuccess != null)
+            runOnSuccess.retry();
     }
 }

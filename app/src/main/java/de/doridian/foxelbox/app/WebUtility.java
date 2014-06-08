@@ -109,9 +109,11 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
             return;
 
         try {
-            if (result.getBoolean("success"))
+            if (result.getBoolean("success")) {
+                if(result.has("session_id"))
+                    LoginUtility.session_id = result.getString("session_id");
                 onSuccess(result.getJSONObject("result"));
-            else {
+            } else {
                 if(result.has("retry") && result.getBoolean("retry")) {
                     new LoginUtility(this, context).execute();
                     return;
@@ -127,9 +129,7 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
     }
 
-    protected void onSuccess(JSONObject result) throws JSONException {
-        Toast.makeText(context, "DBG SUCCESS: " + result.toString(), Toast.LENGTH_SHORT).show();
-    }
+    protected void onSuccess(JSONObject result) throws JSONException { }
 
     private static JSONObject tryDownloadURLInternal(String urlStr, String data)  throws HttpErrorException {
         InputStream is = null;
