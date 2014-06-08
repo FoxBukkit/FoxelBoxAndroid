@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WebUtility extends AsyncTask<String, Void, JSONObject> {
-    public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
+    public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
+    //public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
 
     public static class HttpErrorException extends Exception {
         public HttpErrorException(String detailMessage) {
@@ -36,14 +37,24 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
     }
 
     public static String encodeData(CharSequence... dataVararg) {
+        return encodeData(true, dataVararg);
+    }
+
+    protected static String encodeData(boolean add_session_id, CharSequence... dataVararg) {
         Map<CharSequence, CharSequence> data = new HashMap<CharSequence, CharSequence>();
         for(int i = 0; i < dataVararg.length; i += 2) {
             data.put(dataVararg[i], dataVararg[i + 1]);
         }
-        return encodeData(data);
+        return encodeData(data, add_session_id);
     }
 
     public static String encodeData(Map<CharSequence, CharSequence> data) {
+        return encodeData(data, true);
+    }
+
+    protected static String encodeData(Map<CharSequence, CharSequence> data, boolean add_session_id) {
+        if(add_session_id)
+            data.put("session_id", LoginUtility.session_id);
         StringBuilder result = new StringBuilder();
         boolean notFirst = false;
         for(Map.Entry<CharSequence, CharSequence> entries : data.entrySet()) {
@@ -62,8 +73,15 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         this.context = context;
     }
 
+    private String[] lastArgs;
+
+    protected void retry() {
+        execute(lastArgs);
+    }
+
     @Override
     protected JSONObject doInBackground(String... strings) {
+        lastArgs = strings;
         String url, data;
         url = strings[0];
         if(strings.length < 2)
@@ -93,18 +111,23 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         try {
             if (result.getBoolean("success"))
                 onSuccess(result.getJSONObject("result"));
-            else
+            else {
+                if(result.has("retry") && result.getBoolean("retry")) {
+                    new LoginUtility(this, context).execute();
+                    return;
+                }
                 onError(result.getString("message"));
+            }
         } catch (JSONException e) {
             Log.e("foxelbox", e.getMessage(), e);
         }
     }
 
-    protected void onError(String message) {
+    protected void onError(String message) throws JSONException {
         Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
     }
 
-    protected void onSuccess(JSONObject result) {
+    protected void onSuccess(JSONObject result) throws JSONException {
         Toast.makeText(context, "DBG SUCCESS: " + result.toString(), Toast.LENGTH_SHORT).show();
     }
 

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends ActionBarActivity
@@ -58,23 +59,25 @@ public class MainActivity extends ActionBarActivity
     public void doLogin(final View view) {
         loginDialog.findViewById(R.id.login_button).setEnabled(false);
         loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
-        new WebUtility(getApplicationContext()) {
+
+        LoginUtility.username = ((EditText) loginDialog.findViewById(R.id.login_username)).getText();
+        LoginUtility.password = ((EditText) loginDialog.findViewById(R.id.login_password)).getText();
+
+        new LoginUtility(null, getApplicationContext()) {
             @Override
-            protected void onSuccess(JSONObject result) {
+            protected void onSuccess(JSONObject result) throws JSONException {
+                super.onSuccess(result);
                 loginDialog.hide();
                 loginDialog = null;
             }
 
             @Override
-            protected void onError(String message) {
+            protected void onError(String message) throws JSONException {
                 super.onError(message);
                 loginDialog.findViewById(R.id.login_button).setEnabled(true);
                 loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
             }
-        }.execute("login", WebUtility.encodeData(
-                "username", ((EditText) loginDialog.findViewById(R.id.login_username)).getText(),
-                "password", ((EditText) loginDialog.findViewById(R.id.login_password)).getText()
-        ));
+        }.execute();
     }
 
     public void sendChatMessage(View view) {
@@ -83,7 +86,7 @@ public class MainActivity extends ActionBarActivity
         msgTextField.setText("");
         new WebUtility(getApplicationContext()) {
             @Override
-            protected void onSuccess(JSONObject result) {
+            protected void onSuccess(JSONObject result) throws JSONException {
 
             }
         }.execute("message/send", WebUtility.encodeData("message", message));
