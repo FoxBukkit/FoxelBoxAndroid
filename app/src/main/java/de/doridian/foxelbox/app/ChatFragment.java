@@ -1,8 +1,6 @@
 package de.doridian.foxelbox.app;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +35,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             }
         });
 
-        ArrayAdapter<String> items = new ArrayAdapter<String>(fragmentView.getContext(), android.R.layout.simple_list_item_1);
+        ArrayAdapter<String> items = new ArrayAdapter<String>(fragmentView.getContext(), R.layout.layout_chat_message);
         ((ListView)fragmentView.findViewById(R.id.listChatMessages)).setAdapter(items);
 
         return fragmentView;
