@@ -174,16 +174,6 @@ public class MainActivity extends ActionBarActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            int fragment = R.layout.fragment_main;
-            switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
-                case 1:
-                    fragment = R.layout.fragment_chat;
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-            }
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
