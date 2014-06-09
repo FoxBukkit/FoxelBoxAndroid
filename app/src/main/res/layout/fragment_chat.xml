@@ -15,7 +15,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/textChatMessage"/>
+        android:layout_above="@+id/textChatMessage"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"/>
 
     <EditText
         android:layout_width="wrap_content"
