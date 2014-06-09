@@ -102,18 +102,20 @@ public class MainActivity extends ActionBarActivity
         actionBar.setTitle(mTitle);
     }
 
+    private ChatFragment chatFragment = null;
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        Log.e("foxelbox", "0");
-
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        Fragment fragment = null;
+        Fragment fragment;
 
         switch(position + 1) {
             case 1:
-                fragment = new ChatFragment();
+                if(chatFragment == null)
+                    chatFragment = new ChatFragment();
+                fragment = chatFragment;
                 break;
             case 2:
                 fragment = PlaceholderFragment.newInstance(position + 1);
@@ -125,13 +127,9 @@ public class MainActivity extends ActionBarActivity
                 return;
         }
 
-        Log.e("foxelbox", "A");
-
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
-
-        Log.e("foxelbox", "B");
     }
 
     public void onSectionAttached(int number) {
