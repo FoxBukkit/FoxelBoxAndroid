@@ -19,6 +19,9 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -31,6 +34,9 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    private Dialog loginDialog = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +51,17 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         needLogin();
     }
 
-    private Dialog loginDialog = null;
-
     private void needLogin() {
+        if(LoginUtility.username != null && LoginUtility.password != null)
+            return;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         loginDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_login, null)).setTitle(R.string.login_title).setCancelable(false).create();
@@ -69,7 +79,7 @@ public class MainActivity extends ActionBarActivity
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
                 super.onSuccess(result);
-                loginDialog.hide();
+                loginDialog.dismiss();
                 loginDialog = null;
             }
 
@@ -80,6 +90,15 @@ public class MainActivity extends ActionBarActivity
                 loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
             }
         }.execute();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(loginDialog != null) {
+            loginDialog.dismiss();
+            loginDialog = null;
+        }
     }
 
     @Override
@@ -102,7 +121,7 @@ public class MainActivity extends ActionBarActivity
         actionBar.setTitle(mTitle);
     }
 
-    private ChatFragment chatFragment = null;
+    private static HashMap<Integer, Fragment> fragmentStorage = new HashMap<Integer, Fragment>();
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -111,22 +130,25 @@ public class MainActivity extends ActionBarActivity
 
         Fragment fragment;
 
-        switch(position + 1) {
-            case 1:
-                if(chatFragment == null)
-                    chatFragment = new ChatFragment();
-                fragment = chatFragment;
-                break;
-            case 2:
-                fragment = PlaceholderFragment.newInstance(position + 1);
-                break;
-            case 3:
-                fragment = PlaceholderFragment.newInstance(position + 1);
-                break;
-            default:
-                return;
-        }
+        final int pos = position + 1;
 
+        fragment = fragmentStorage.get(pos);
+        if(fragment == null) {
+            switch (pos) {
+                case 1:
+                    fragment = new ChatFragment(pos);
+                    break;
+                case 2:
+                    fragment = new PlaceholderFragment(pos);
+                    break;
+                case 3:
+                    fragment = new PlaceholderFragment(pos);
+                    break;
+                default:
+                    return;
+            }
+            fragmentStorage.put(pos, fragment);
+        }
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
@@ -156,19 +178,14 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
+        public PlaceholderFragment() {
+
         }
 
-        public PlaceholderFragment() {
+        public PlaceholderFragment(int sectionNumber) {
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            setArguments(args);
         }
 
         @Override
