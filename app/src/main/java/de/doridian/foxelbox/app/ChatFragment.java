@@ -35,7 +35,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             }
         });
 
-        ArrayAdapter<String> items = new ArrayAdapter<String>(fragmentView.getContext(), R.layout.layout_chat_message);
+        ArrayAdapter<String> items = new ArrayAdapter<String>(fragmentView.getContext(), R.layout.text_view_minecraft);
         ((ListView)fragmentView.findViewById(R.id.listChatMessages)).setAdapter(items);
 
         return fragmentView;

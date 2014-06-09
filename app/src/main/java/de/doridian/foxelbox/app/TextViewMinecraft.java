@@ -5,16 +5,16 @@ import android.text.Spannable;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-public class TextViewChatMessage extends TextView {
-    public TextViewChatMessage(Context context) {
+public class TextViewMinecraft extends TextView {
+    public TextViewMinecraft(Context context) {
         super(context);
     }
 
-    public TextViewChatMessage(Context context, AttributeSet attrs) {
+    public TextViewMinecraft(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TextViewChatMessage(Context context, AttributeSet attrs, int defStyle) {
+    public TextViewMinecraft(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

@@ -136,7 +136,7 @@ public class MainActivity extends ActionBarActivity
                     fragment = new ChatFragment(pos);
                     break;
                 case 2:
-                    fragment = new PlaceholderFragment(pos);
+                    fragment = new ProfileFragment(pos);
                     break;
                 case 3:
                     fragment = new PlaceholderFragment(pos);

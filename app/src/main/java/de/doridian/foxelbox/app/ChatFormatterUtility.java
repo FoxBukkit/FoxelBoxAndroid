@@ -72,7 +72,7 @@ public class ChatFormatterUtility {
                 int startPos = lastPos - (offset - 2);
                 int endPos = pos - offset;
                 if(pos < 0)
-                    endPos = noColorCode.length() - 1;
+                    endPos = noColorCode.length();
                 if(endPos != startPos) {
                     stringBuilder.setSpan(colorCodeSpans[currentColor], startPos, endPos, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                     if (bold && italic)
