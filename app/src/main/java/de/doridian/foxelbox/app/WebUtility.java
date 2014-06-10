@@ -2,9 +2,7 @@ package de.doridian.foxelbox.app;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +18,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebUtility extends AsyncTask<String, Void, JSONObject> {
+public class WebUtility {
     public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
     //public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
 
@@ -90,22 +88,33 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         this.activity = activity;
     }
 
-    private String[] lastArgs;
+    private String lastURL;
+    private String lastData;
 
-    protected void retry() {
-        final WebUtility _this = this;
-        AsyncTask<String, Void, JSONObject> retryWebUtility = new AsyncTask<String, Void, JSONObject>() {
-            @Override
-            protected JSONObject doInBackground(String... strings) {
-                return _this.doInBackground(strings);
-            }
+    public void retry() {
+        execute(lastURL, lastData);
+    }
 
+    public boolean isLongPoll() {
+        return false;
+    }
+
+    public void execute(final String url, final String data) {
+        lastURL = url;
+        lastData = data;
+        onPreExecute();
+        new Thread() {
             @Override
-            protected void onPostExecute(JSONObject result) {
-                _this.onPostExecute(result);
+            public void run() {
+                final JSONObject ret = doInBackground(url, data);
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onPostExecute(ret);
+                    }
+                });
             }
-        };
-        retryWebUtility.execute(lastArgs);
+        }.start();
     }
 
     private void _invalidateViewActionsMenu() {
@@ -117,22 +126,14 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         });
     }
 
-    @Override
     protected void onPreExecute() {
-        super.onPreExecute();
-        activityCounter++;
-        _invalidateViewActionsMenu();
+        if(!isLongPoll()) {
+            activityCounter++;
+            _invalidateViewActionsMenu();
+        }
     }
 
-    @Override
-    protected final JSONObject doInBackground(String... strings) {
-        lastArgs = strings;
-        String url, data;
-        url = strings[0];
-        if(strings.length < 2)
-            data = null;
-        else
-            data = strings[1];
+    protected final JSONObject doInBackground(String url, String data) {
         try {
             return tryDownloadURLInternal(url, data);
         } catch (HttpErrorException e) {
@@ -148,16 +149,17 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         }
     }
 
-    @Override
     protected final void onPostExecute(JSONObject result) {
-        activityCounter--;
-        _invalidateViewActionsMenu();
+        if(!isLongPoll()) {
+            activityCounter--;
+            _invalidateViewActionsMenu();
+        }
 
         if(result == null)
             return;
 
         try {
-            if (result.getBoolean("success")) {
+            if (result.has("success") && result.getBoolean("success")) {
                 if(result.has("session_id"))
                     LoginUtility.session_id = result.getString("session_id");
                 onSuccess(result.getJSONObject("result"));
@@ -166,7 +168,7 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
                     new LoginUtility(this, activity, context).execute();
                     return;
                 }
-                onError(result.getString("message"));
+                onError(result.has("message") ? result.getString("message") : "Unknown error");
             }
         } catch (JSONException e) {
             Log.e("foxelbox", e.getMessage(), e);
@@ -179,16 +181,18 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
 
     protected void onSuccess(JSONObject result) throws JSONException { }
 
-    private static JSONObject tryDownloadURLInternal(String urlStr, String data)  throws HttpErrorException {
+    private JSONObject tryDownloadURLInternal(String urlStr, String data)  throws HttpErrorException {
         InputStream is = null;
 
         try {
             URL url = new URL(API_ENDPOINT + urlStr);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setReadTimeout(isLongPoll() ? 60000 : 5000 /* milliseconds */);
+            conn.setConnectTimeout(5000 /* milliseconds */);
             conn.setDoInput(true);
             if(data != null) {
+                if(isLongPoll())
+                    data += "&longpoll=true";
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
                 OutputStream os = conn.getOutputStream();
@@ -198,7 +202,6 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
                 conn.setRequestMethod("GET");
             }
             // Starts the query
-            //conn.connect();
             int response = conn.getResponseCode();
             if(response != 200)
                 throw new HttpErrorException("Response code " + response);

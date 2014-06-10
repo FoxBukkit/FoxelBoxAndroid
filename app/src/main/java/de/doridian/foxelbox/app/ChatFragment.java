@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class ChatFragment extends MainActivity.PlaceholderFragment {
     private static ChatPollWebUtility chatPollWebUtility = null;
-    private static ChatPollBackgroundTask chatPollBackgroundTask = null;
 
     private static double lastTime = 0;
     private static ArrayList<String> messageCache = new ArrayList<String>();
@@ -46,32 +45,6 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         return fragmentView;
     }
 
-    private class ChatPollBackgroundTask extends AsyncTask<Void, Void, Void> {
-        private final Activity activity;
-        private final View view;
-
-        private ChatPollBackgroundTask(Activity activity, View view) {
-            this.activity = activity;
-            this.view = view;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) { }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            if(!isRunning || chatPollBackgroundTask != this)
-                return;
-            chatPollWebUtility = new ChatPollWebUtility(activity, view);
-            chatPollWebUtility.execute();
-        }
-    }
-
     private class ChatPollWebUtility extends WebUtility {
         private final View view;
 
@@ -81,12 +54,20 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         }
 
         public void execute() {
+            if(!isRunning || chatPollWebUtility != this)
+                return;
+
             if(LoginUtility.session_id == null) {
                 doRun();
                 return;
             }
 
             execute("message/poll", WebUtility.encodeData("since", "" + lastTime));
+        }
+
+        @Override
+        public boolean isLongPoll() {
+            return true;
         }
 
         @Override
@@ -108,8 +89,15 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         private void doRun() {
             if(!isRunning || chatPollWebUtility != this)
                 return;
-            chatPollBackgroundTask = new ChatPollBackgroundTask(activity, view);
-            chatPollBackgroundTask.execute();
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) { }
+                    execute();
+                }
+            }.start();
         }
 
         @Override
