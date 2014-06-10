@@ -21,6 +21,11 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     private static double lastTime = 0;
     private static ArrayList<String> messageCache = new ArrayList<String>();
 
+    public static void resetChatMessages() {
+        lastTime = 0;
+        messageCache = new ArrayList<String>();
+    }
+
     private boolean isRunning = true;
 
     public ChatFragment() { }
