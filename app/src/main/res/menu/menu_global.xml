@@ -2,10 +2,8 @@
 
 <menu xmlns:tools="http://schemas.android.com/tools"
       xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:yourapp="http://schemas.android.com/apk/res-auto"
       tools:context="de.doridian.foxelbox.app.MainActivity">
     <item android:id="@+id/menuLoaderSpinner"
-          yourapp:showAsAction="always"
-          android:title="@string/loading_string"
-          android:visibility="gone"/>
+          android:showAsAction="always"
+          android:title="@string/loading_string"/>
 </menu>

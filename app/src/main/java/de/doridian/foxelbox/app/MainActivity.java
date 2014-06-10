@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.ActionBar;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.EditText;
 import org.json.JSONException;
@@ -16,7 +15,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
@@ -38,7 +37,7 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -100,18 +99,23 @@ public class MainActivity extends ActionBarActivity
         getMenuInflater().inflate(R.menu.menu_global, menu);
         MenuItem loaderSpinner = menu.findItem(R.id.menuLoaderSpinner);
         loaderSpinner.setActionView(R.layout.actionbar_immediate_progress);
+        loaderSpinner.setVisible(WebUtility.isRunning());
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
+            restoreActionBar();
+        }
+        return true;
+        /*if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             restoreActionBar();
             return true;
         }
-        return super.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);*/
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setSubtitle(mTitle);
@@ -122,7 +126,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
 
         Fragment fragment;
 

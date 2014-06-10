@@ -17,11 +17,6 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     private static ChatPollWebUtility chatPollWebUtility = null;
     private static ChatPollBackgroundTask chatPollBackgroundTask = null;
 
-    private void _eraseChatPollUtils() {
-        chatPollWebUtility = null;
-        chatPollBackgroundTask = null;
-    }
-
     private static double lastTime = 0;
     private static ArrayList<String> messageCache = new ArrayList<String>();
 

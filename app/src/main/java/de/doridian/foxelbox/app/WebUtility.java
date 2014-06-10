@@ -33,6 +33,11 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
     protected final Context context;
     protected final Activity activity;
 
+    private static volatile int activityCounter = 0;
+    public static boolean isRunning() {
+        return activityCounter > 0;
+    }
+
     private static String urlEncode(CharSequence str) {
         try {
             return URLEncoder.encode(str.toString(), "UTF-8");
@@ -103,11 +108,11 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         retryWebUtility.execute(lastArgs);
     }
 
-    private void _setLoaderVisibility(final int visibility) {
+    private void _invalidateViewActionsMenu() {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.findViewById(R.id.menuLoaderSpinner).setVisibility(visibility);
+                activity.invalidateOptionsMenu();
             }
         });
     }
@@ -115,7 +120,8 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        _setLoaderVisibility(View.VISIBLE);
+        activityCounter++;
+        _invalidateViewActionsMenu();
     }
 
     @Override
@@ -144,7 +150,8 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected final void onPostExecute(JSONObject result) {
-        _setLoaderVisibility(View.GONE);
+        activityCounter--;
+        _invalidateViewActionsMenu();
 
         if(result == null)
             return;
