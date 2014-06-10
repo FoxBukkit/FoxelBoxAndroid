@@ -21,7 +21,8 @@
             android:layout_weight="5000"
             android:hint="@string/message_string"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:inputType="textShortMessage|textCapSentences|textAutoComplete|textAutoCorrect"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
