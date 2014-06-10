@@ -19,7 +19,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/textChatMessage"
             android:layout_weight="5000"
-            android:hint="@string/message_string"/>
+            android:hint="@string/message_string"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
