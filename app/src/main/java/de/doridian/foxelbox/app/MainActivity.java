@@ -141,6 +141,7 @@ public class MainActivity extends Activity
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = getLayoutInflater();
                 final Dialog logoutDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_logout, null)).setCancelable(false).create();
+                logoutDialog.show();
 
                 new LoginUtility(null, this, getApplicationContext()) {
                     @Override
