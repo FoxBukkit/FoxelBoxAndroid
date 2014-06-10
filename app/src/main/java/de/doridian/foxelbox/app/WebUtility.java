@@ -166,7 +166,7 @@ public class WebUtility {
                     LoginUtility.session_id = result.getString("session_id");
                 onSuccess(result.getJSONObject("result"));
             } else {
-                if(result.has("retry") && result.getBoolean("retry")) {
+                if(result.has("retry") && result.getBoolean("retry") && LoginUtility.enabled) {
                     new LoginUtility(this, activity, context).login();
                     return;
                 }

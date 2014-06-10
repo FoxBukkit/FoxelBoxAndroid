@@ -69,6 +69,7 @@ public class MainActivity extends Activity
         LoginUtility.password = ((EditText) loginDialog.findViewById(R.id.login_password)).getText().toString();
         LoginUtility.saveCredentials(this);
 
+        LoginUtility.enabled = true;
         new LoginUtility(null, this, getApplicationContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {

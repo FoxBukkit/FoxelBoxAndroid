@@ -10,6 +10,7 @@ import org.json.JSONObject;
 public class LoginUtility extends WebUtility {
     private final WebUtility runOnSuccess;
 
+    protected static boolean enabled = false;
     protected static String session_id = null;
     protected static String username = null;
     protected static String password = null;
@@ -33,11 +34,15 @@ public class LoginUtility extends WebUtility {
     }
 
     public void login() {
+        if(!enabled)
+            return;
         execute("login/auth", WebUtility.encodeData(false, "username", username, "password", password));
     }
 
     public void logout() {
+        enabled = false;
         execute("login/logout", WebUtility.encodeData(true));
+        session_id = null;
     }
 
     @Override
