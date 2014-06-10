@@ -58,7 +58,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                 return;
 
             if(LoginUtility.session_id == null) {
-                doRun();
+                doRun(true);
                 return;
             }
 
@@ -83,18 +83,20 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                 messageCache.add(messagePlain);
             }
 
-            doRun();
+            doRun(false);
         }
 
-        private void doRun() {
+        private void doRun(final boolean doSleep) {
             if(!isRunning || chatPollWebUtility != this)
                 return;
             Thread t = new Thread() {
                 @Override
                 public void run() {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) { }
+                    if(doSleep) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (Exception e) { }
+                    }
                     execute();
                 }
             };
@@ -105,7 +107,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         @Override
         protected void onError(String message) throws JSONException {
             super.onError(message);
-            doRun();
+            doRun(true);
         }
     }
 
