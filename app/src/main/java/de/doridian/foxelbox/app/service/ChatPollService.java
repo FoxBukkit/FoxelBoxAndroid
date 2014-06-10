@@ -57,14 +57,14 @@ public class ChatPollService extends Service {
 
     public class ChatBinder extends Binder {
         public void addReceiver(ChatMessageReceiver receiver, boolean sendExisting) {
-            if(sendExisting) {
-                final ArrayList<Spannable> myMessageCache;
-                synchronized (messageCache) {
-                    myMessageCache = new ArrayList<Spannable>(messageCache);
-                }
-                receiver.chatMessagesReceived(myMessageCache);
-            }
             synchronized (chatReceivers) {
+                if(sendExisting) {
+                    final ArrayList<Spannable> myMessageCache;
+                    synchronized (messageCache) {
+                        myMessageCache = new ArrayList<Spannable>(messageCache);
+                    }
+                    receiver.chatMessagesReceived(myMessageCache);
+                }
                 chatReceivers.add(receiver);
             }
         }
@@ -107,22 +107,22 @@ public class ChatPollService extends Service {
         protected void onSuccess(JSONObject result) throws JSONException {
             lastTime = result.getDouble("time");
             final JSONArray messages = result.getJSONArray("messages");
-            final ArrayList<Spannable> myMessageCache = new ArrayList<Spannable>();
+            synchronized (chatReceivers) {
+                final ArrayList<Spannable> myMessageCache = new ArrayList<Spannable>();
 
-            synchronized (messageCache) {
-                for (int i = messages.length() - 1; i >= 0; i--) {
-                    JSONObject message = messages.getJSONObject(i);
-                    String messagePlain = message.getJSONObject("contents").getString("plain");
-                    Spannable messageFormatted = ChatFormatterUtility.formatString(messagePlain);
-                    messageCache.add(messageFormatted);
-                    myMessageCache.add(messageFormatted);
+                synchronized (messageCache) {
+                    for (int i = messages.length() - 1; i >= 0; i--) {
+                        JSONObject message = messages.getJSONObject(i);
+                        String messagePlain = message.getJSONObject("contents").getString("plain");
+                        Spannable messageFormatted = ChatFormatterUtility.formatString(messagePlain);
+                        messageCache.add(messageFormatted);
+                        myMessageCache.add(messageFormatted);
+                    }
+
+                    while(messageCache.size() > MAX_MESSAGES)
+                        messageCache.remove(0);
                 }
 
-                while(messageCache.size() > MAX_MESSAGES)
-                    messageCache.remove(0);
-            }
-
-            synchronized (chatReceivers) {
                 for (final ChatMessageReceiver chatMessageReceiver : chatReceivers) {
                     Thread t = new Thread() {
                         public void run() {
