@@ -21,8 +21,6 @@ public class ChatPollService extends Service {
     private static ChatPollWebUtility chatPollWebUtility = null;
     private final Set<ChatMessageReceiver> chatReceivers = Collections.newSetFromMap(new HashMap<ChatMessageReceiver, Boolean>());
 
-    private boolean isRunning = true;
-
     public void resetChatMessages() {
         lastTime = 0;
         synchronized (messageCache) {
@@ -31,14 +29,13 @@ public class ChatPollService extends Service {
     }
 
     public void stopChatReceiverQueue() {
-        isRunning = false;
+        chatPollWebUtility = null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int res = super.onStartCommand(intent, flags, startId);
         stopChatReceiverQueue();
-        isRunning = true;
         chatPollWebUtility = new ChatPollWebUtility();
         chatPollWebUtility.execute();
         return res;
@@ -82,12 +79,14 @@ public class ChatPollService extends Service {
     }
 
     private class ChatPollWebUtility extends WebUtility {
+        private boolean inProgress = false;
+
         private ChatPollWebUtility() {
             super(null, null);
         }
 
         public void execute() {
-            if(!isRunning || chatPollWebUtility != this)
+            if(chatPollWebUtility != this)
                 return;
 
             if(!LoginUtility.hasSessionId()) {
@@ -95,6 +94,7 @@ public class ChatPollService extends Service {
                 return;
             }
 
+            inProgress = true;
             execute("message/poll", WebUtility.encodeData("since", "" + lastTime));
         }
 
@@ -105,6 +105,9 @@ public class ChatPollService extends Service {
 
         @Override
         protected void onSuccess(JSONObject result) throws JSONException {
+            if(chatPollWebUtility != this)
+                return;
+
             lastTime = result.getDouble("time");
             final JSONArray messages = result.getJSONArray("messages");
             synchronized (chatReceivers) {
@@ -134,11 +137,12 @@ public class ChatPollService extends Service {
                 }
             }
 
+            inProgress = false;
             doRun(false);
         }
 
         private void doRun(final boolean doSleep) {
-            if(!isRunning || chatPollWebUtility != this)
+            if(chatPollWebUtility != this || inProgress)
                 return;
             Thread t = new Thread() {
                 @Override
@@ -146,7 +150,9 @@ public class ChatPollService extends Service {
                     if(doSleep) {
                         try {
                             Thread.sleep(1000);
-                        } catch (Exception e) { }
+                        } catch (Exception e) {
+                            return;
+                        }
                     }
                     execute();
                 }
@@ -158,6 +164,7 @@ public class ChatPollService extends Service {
         @Override
         protected void onError(String message) throws JSONException {
             super.onError(message);
+            inProgress = false;
             doRun(true);
         }
     }
