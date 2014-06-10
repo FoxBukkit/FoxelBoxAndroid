@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WebUtility {
-    public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
-    //public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
+    //public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
+    public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
 
     public static class HttpErrorException extends Exception {
         public HttpErrorException(String detailMessage) {
@@ -167,7 +167,7 @@ public class WebUtility {
                 onSuccess(result.getJSONObject("result"));
             } else {
                 if(result.has("retry") && result.getBoolean("retry")) {
-                    new LoginUtility(this, activity, context).execute();
+                    new LoginUtility(this, activity, context).login();
                     return;
                 }
                 onError(result.has("message") ? result.getString("message") : "Unknown error");

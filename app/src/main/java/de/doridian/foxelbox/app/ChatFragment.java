@@ -1,7 +1,6 @@
 package de.doridian.foxelbox.app;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -148,7 +147,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         new WebUtility(getActivity(), view.getContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
-                Toast.makeText(context, "DBG SUCCESS: " + result.toString(), Toast.LENGTH_SHORT).show();
+
             }
         }.execute("message/send", WebUtility.encodeData("message", message));
     }

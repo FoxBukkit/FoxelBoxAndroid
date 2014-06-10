@@ -3,6 +3,7 @@ package de.doridian.foxelbox.app;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -30,7 +31,6 @@ public class MainActivity extends Activity
 
     private Dialog loginDialog = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,26 +47,34 @@ public class MainActivity extends Activity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         needLogin();
     }
 
     private void needLogin() {
-        if(LoginUtility.username != null && LoginUtility.password != null)
+        if(LoginUtility.username != null && LoginUtility.password != null && LoginUtility.session_id != null)
             return;
+        LoginUtility.loadCredentials(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        loginDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_login, null)).setTitle(R.string.login_title).setCancelable(false).create();
+        View dialogView = inflater.inflate(R.layout.fragment_dialog_login, null);
+        loginDialog = builder.setView(dialogView).setTitle(R.string.login_title).setCancelable(false).create();
         loginDialog.show();
+        if(LoginUtility.username != null && LoginUtility.password != null) {
+            ((EditText) loginDialog.findViewById(R.id.login_username)).setText(LoginUtility.username);
+            ((EditText) loginDialog.findViewById(R.id.login_password)).setText(LoginUtility.password);
+            doLogin(dialogView);
+        }
     }
 
     public void doLogin(final View view) {
         loginDialog.findViewById(R.id.login_button).setEnabled(false);
         loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
 
-        LoginUtility.username = ((EditText) loginDialog.findViewById(R.id.login_username)).getText();
-        LoginUtility.password = ((EditText) loginDialog.findViewById(R.id.login_password)).getText();
+        LoginUtility.username = ((EditText) loginDialog.findViewById(R.id.login_username)).getText().toString();
+        LoginUtility.password = ((EditText) loginDialog.findViewById(R.id.login_password)).getText().toString();
+        LoginUtility.saveCredentials(this);
 
         new LoginUtility(null, this, getApplicationContext()) {
             @Override
@@ -82,7 +90,7 @@ public class MainActivity extends Activity
                 loginDialog.findViewById(R.id.login_button).setEnabled(true);
                 loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
             }
-        }.execute();
+        }.login();
     }
 
     @Override
@@ -112,9 +120,6 @@ public class MainActivity extends Activity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setSubtitle(mTitle);
     }
-
-    private static HashMap<Integer, Fragment> fragmentStorage = new HashMap<Integer, Fragment>();
-
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -124,23 +129,45 @@ public class MainActivity extends Activity
 
         final int pos = position + 1;
 
-        fragment = fragmentStorage.get(pos);
-        if(fragment == null) {
-            switch (pos) {
-                case 1:
-                    fragment = new ChatFragment(pos);
-                    break;
-                case 2:
-                    fragment = new ProfileFragment(pos);
-                    break;
-                case 3:
-                    fragment = new PlaceholderFragment(pos);
-                    break;
-                default:
-                    return;
-            }
-            fragmentStorage.put(pos, fragment);
+        switch (pos) {
+            case 1:
+                fragment = new ChatFragment(pos);
+                break;
+            case 2:
+                fragment = new ProfileFragment(pos);
+                break;
+            case 3:
+                fragment = new PlaceholderFragment(pos);
+                break;
+            case 4:
+                LoginUtility.username = null;
+                LoginUtility.password = null;
+                LoginUtility.saveCredentials(this);
+            case 5:
+                new LoginUtility(null, this, getApplicationContext()) {
+                    @Override
+                    protected void onSuccess(JSONObject result) throws JSONException {
+                        onDone();
+                    }
+
+                    @Override
+                    protected void onError(String message) throws JSONException {
+                        onDone();
+                    }
+
+                    private void onDone() {
+                        LoginUtility.session_id = null;
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                }.logout();
+                return;
+            default:
+                return;
         }
+
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
