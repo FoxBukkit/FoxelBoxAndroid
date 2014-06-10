@@ -9,10 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +69,7 @@ public class MainActivity extends ActionBarActivity
         LoginUtility.username = ((EditText) loginDialog.findViewById(R.id.login_username)).getText();
         LoginUtility.password = ((EditText) loginDialog.findViewById(R.id.login_password)).getText();
 
-        new LoginUtility(null, getApplicationContext()) {
+        new LoginUtility(null, this, getApplicationContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
                 super.onSuccess(result);
@@ -100,11 +97,13 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_global, menu);
+        MenuItem loaderSpinner = menu.findItem(R.id.menuLoaderSpinner);
+        loaderSpinner.setActionView(R.layout.actionbar_immediate_progress);
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            //getMenuInflater().inflate(R.menu.main, menu);
             restoreActionBar();
             return true;
         }
@@ -115,7 +114,7 @@ public class MainActivity extends ActionBarActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        actionBar.setSubtitle(mTitle);
     }
 
     private static HashMap<Integer, Fragment> fragmentStorage = new HashMap<Integer, Fragment>();

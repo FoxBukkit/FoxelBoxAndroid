@@ -1,8 +1,10 @@
 package de.doridian.foxelbox.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +31,7 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
     }
 
     protected final Context context;
+    protected final Activity activity;
 
     private static String urlEncode(CharSequence str) {
         try {
@@ -72,8 +75,14 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
         return result.toString();
     }
 
-    public WebUtility(Context context) {
+    public WebUtility(Activity activity) {
+        this.context = activity.getApplicationContext();
+        this.activity = activity;
+    }
+
+    public WebUtility(Activity activity, Context context) {
         this.context = context;
+        this.activity = activity;
     }
 
     private String[] lastArgs;
@@ -92,6 +101,21 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
             }
         };
         retryWebUtility.execute(lastArgs);
+    }
+
+    private void _setLoaderVisibility(final int visibility) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.findViewById(R.id.menuLoaderSpinner).setVisibility(visibility);
+            }
+        });
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        _setLoaderVisibility(View.VISIBLE);
     }
 
     @Override
@@ -120,6 +144,8 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected final void onPostExecute(JSONObject result) {
+        _setLoaderVisibility(View.GONE);
+
         if(result == null)
             return;
 
@@ -130,7 +156,7 @@ public class WebUtility extends AsyncTask<String, Void, JSONObject> {
                 onSuccess(result.getJSONObject("result"));
             } else {
                 if(result.has("retry") && result.getBoolean("retry")) {
-                    new LoginUtility(this, context).execute();
+                    new LoginUtility(this, activity, context).execute();
                     return;
                 }
                 onError(result.getString("message"));

@@ -1,5 +1,6 @@
 package de.doridian.foxelbox.app;
 
+import android.app.Activity;
 import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,8 +12,8 @@ public class LoginUtility extends WebUtility {
     protected static CharSequence username = null;
     protected static CharSequence password = null;
 
-    public LoginUtility(WebUtility runOnSuccess, Context context) {
-        super(context);
+    public LoginUtility(WebUtility runOnSuccess, Activity activity, Context context) {
+        super(activity, context);
         this.runOnSuccess = runOnSuccess;
     }
 

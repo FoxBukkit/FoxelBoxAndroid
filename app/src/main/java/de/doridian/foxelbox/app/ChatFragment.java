@@ -1,5 +1,7 @@
 package de.doridian.foxelbox.app;
 
+import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +15,17 @@ import java.util.ArrayList;
 
 public class ChatFragment extends MainActivity.PlaceholderFragment {
     private static ChatPollWebUtility chatPollWebUtility = null;
+    private static ChatPollBackgroundTask chatPollBackgroundTask = null;
+
+    private void _eraseChatPollUtils() {
+        chatPollWebUtility = null;
+        chatPollBackgroundTask = null;
+    }
 
     private static double lastTime = 0;
     private static ArrayList<String> messageCache = new ArrayList<String>();
+
+    private boolean isRunning = true;
 
     public ChatFragment() { }
 
@@ -41,14 +51,38 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         return fragmentView;
     }
 
+    private class ChatPollBackgroundTask extends AsyncTask<Void, Void, Void> {
+        private final Activity activity;
+        private final View view;
+
+        private ChatPollBackgroundTask(Activity activity, View view) {
+            this.activity = activity;
+            this.view = view;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) { }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if(!isRunning || chatPollBackgroundTask != this)
+                return;
+            chatPollWebUtility = new ChatPollWebUtility(activity, view);
+            chatPollWebUtility.execute();
+        }
+    }
+
     private class ChatPollWebUtility extends WebUtility {
         private final View view;
-        private boolean running;
 
-        private ChatPollWebUtility(View view) {
-            super(view.getContext());
+        private ChatPollWebUtility(Activity activity, View view) {
+            super(activity, view.getContext());
             this.view = view;
-            this.running = true;
         }
 
         public void execute() {
@@ -77,22 +111,10 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         }
 
         private void doRun() {
-            if(!running)
+            if(!isRunning || chatPollWebUtility != this)
                 return;
-            new Thread() {
-                public void run() {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) { }
-                    stopPoll();
-                    chatPollWebUtility = new ChatPollWebUtility(view);
-                    chatPollWebUtility.execute();
-                }
-            }.start();
-        }
-
-        private void stopPoll() {
-            running = false;
+            chatPollBackgroundTask = new ChatPollBackgroundTask(activity, view);
+            chatPollBackgroundTask.execute();
         }
 
         @Override
@@ -104,13 +126,13 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
 
     public void chatReceiverQueue(View view) {
         stopChatReceiverQueue();
-        chatPollWebUtility = new ChatPollWebUtility(view);
-        chatPollWebUtility.doRun();
+        isRunning = true;
+        chatPollWebUtility = new ChatPollWebUtility(getActivity(), view);
+        chatPollWebUtility.execute();
     }
 
     public void stopChatReceiverQueue() {
-        if(chatPollWebUtility != null)
-            chatPollWebUtility.stopPoll();
+        isRunning = false;
     }
 
     @Override
@@ -126,7 +148,8 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
             final ArrayAdapter<String> chatMessageListAdapter = (ArrayAdapter<String>)chatMessageList.getAdapter();
             chatMessageListAdapter.clear();
-            chatMessageListAdapter.addAll(messageCache);
+            for(String str : messageCache)
+                chatMessageListAdapter.add(str);
         }
         chatReceiverQueue(getView());
     }
@@ -135,7 +158,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         EditText msgTextField = ((EditText)getView().findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");
-        new WebUtility(view.getContext()) {
+        new WebUtility(getActivity(), view.getContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
                 Toast.makeText(context, "DBG SUCCESS: " + result.toString(), Toast.LENGTH_SHORT).show();

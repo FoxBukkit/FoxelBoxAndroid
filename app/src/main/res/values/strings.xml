@@ -13,5 +13,6 @@
     <string name="login_button">Login</string>
     <string name="login_title">Please log in</string>
     <string name="send_button">Send</string>
+    <string name="loading_string">Loading...</string>
 
 </resources>

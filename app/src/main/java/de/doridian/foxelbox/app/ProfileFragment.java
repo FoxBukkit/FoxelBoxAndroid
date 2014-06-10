@@ -9,6 +9,7 @@ import android.widget.ListView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
@@ -25,9 +26,18 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         final ArrayAdapter<String> items = new ArrayAdapter<String>(fragmentView.getContext(), R.layout.text_view_minecraft);
         ((ListView)fragmentView.findViewById(R.id.profileFieldList)).setAdapter(items);
 
+        return fragmentView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        View fragmentView = getView();
+        final ArrayAdapter<String> items = (ArrayAdapter<String>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
         items.add("Please wait. Loading...");
 
-        new WebUtility(fragmentView.getContext()) {
+        new WebUtility(getActivity(), fragmentView.getContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
                 super.onSuccess(result);
@@ -41,7 +51,5 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
                 }
             }
         }.execute("profile", WebUtility.encodeData("uuid", "myself"));
-
-        return fragmentView;
     }
 }
