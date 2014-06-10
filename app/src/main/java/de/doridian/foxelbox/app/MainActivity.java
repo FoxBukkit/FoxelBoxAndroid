@@ -46,7 +46,7 @@ public class MainActivity extends Activity
     }
 
     private void needLogin() {
-        if(LoginUtility.username != null && LoginUtility.password != null && LoginUtility.session_id != null)
+        if(LoginUtility.username != null && LoginUtility.password != null && LoginUtility.hasSessionId())
             return;
         LoginUtility.loadCredentials(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -138,6 +138,10 @@ public class MainActivity extends Activity
                 LoginUtility.password = null;
                 LoginUtility.saveCredentials(this);
             case 5:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = getLayoutInflater();
+                final Dialog logoutDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_logout, null)).setCancelable(false).create();
+
                 new LoginUtility(null, this, getApplicationContext()) {
                     @Override
                     protected void onSuccess(JSONObject result) throws JSONException {
@@ -150,6 +154,7 @@ public class MainActivity extends Activity
                     }
 
                     private void onDone() {
+                        logoutDialog.dismiss();
                         Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.addCategory(Intent.CATEGORY_HOME);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

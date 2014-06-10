@@ -17,5 +17,6 @@
     <string name="title_logout">Log out and exit</string>
     <string name="title_exit">Exit</string>
     <string name="message_string">Enter message</string>
+    <string name="logout_title">Logging out…</string>
 
 </resources>

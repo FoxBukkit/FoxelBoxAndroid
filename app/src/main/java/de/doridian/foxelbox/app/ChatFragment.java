@@ -59,7 +59,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             if(!isRunning || chatPollWebUtility != this)
                 return;
 
-            if(LoginUtility.session_id == null) {
+            if(LoginUtility.hasSessionId()) {
                 doRun(true);
                 return;
             }
