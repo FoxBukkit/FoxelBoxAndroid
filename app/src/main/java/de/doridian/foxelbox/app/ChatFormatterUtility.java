@@ -14,10 +14,10 @@ public class ChatFormatterUtility {
     private static final Pattern REMOVE_COLOR_CHAR = Pattern.compile("\u00a7.");
 
     final static boolean[] isColorCode;
-    final static ForegroundColorSpan[] colorCodeSpans;
+    final static int[] colorCodeSpans;
     static {
         isColorCode = new boolean[256];
-        colorCodeSpans = new ForegroundColorSpan[256];
+        colorCodeSpans = new int[256];
 
         isColorCode['0'] = true;
         isColorCode['1'] = true;
@@ -37,23 +37,23 @@ public class ChatFormatterUtility {
         isColorCode['e'] = true;
         isColorCode['f'] = true;
 
-        colorCodeSpans['0'] = new ForegroundColorSpan(Color.parseColor("#000000"));
-        colorCodeSpans['1'] = new ForegroundColorSpan(Color.parseColor("#0000BE"));
-        colorCodeSpans['2'] = new ForegroundColorSpan(Color.parseColor("#00BE00"));
-        colorCodeSpans['3'] = new ForegroundColorSpan(Color.parseColor("#00BEBE"));
-        colorCodeSpans['4'] = new ForegroundColorSpan(Color.parseColor("#BE0000"));
-        colorCodeSpans['5'] = new ForegroundColorSpan(Color.parseColor("#BE00BE"));
-        colorCodeSpans['6'] = new ForegroundColorSpan(Color.parseColor("#D9A334"));
-        colorCodeSpans['7'] = new ForegroundColorSpan(Color.parseColor("#BEBEBE"));
-        colorCodeSpans['8'] = new ForegroundColorSpan(Color.parseColor("#3F3F3F"));
-        colorCodeSpans['9'] = new ForegroundColorSpan(Color.parseColor("#3F3FFE"));
+        colorCodeSpans['0'] = Color.parseColor("#000000");
+        colorCodeSpans['1'] = Color.parseColor("#0000BE");
+        colorCodeSpans['2'] = Color.parseColor("#00BE00");
+        colorCodeSpans['3'] = Color.parseColor("#00BEBE");
+        colorCodeSpans['4'] = Color.parseColor("#BE0000");
+        colorCodeSpans['5'] = Color.parseColor("#BE00BE");
+        colorCodeSpans['6'] = Color.parseColor("#D9A334");
+        colorCodeSpans['7'] = Color.parseColor("#BEBEBE");
+        colorCodeSpans['8'] = Color.parseColor("#3F3F3F");
+        colorCodeSpans['9'] = Color.parseColor("#3F3FFE");
 
-        colorCodeSpans['a'] = new ForegroundColorSpan(Color.parseColor("#3FFE3F"));
-        colorCodeSpans['b'] = new ForegroundColorSpan(Color.parseColor("#3FFEFE"));
-        colorCodeSpans['c'] = new ForegroundColorSpan(Color.parseColor("#FE3F3F"));
-        colorCodeSpans['d'] = new ForegroundColorSpan(Color.parseColor("#FE3FFE"));
-        colorCodeSpans['e'] = new ForegroundColorSpan(Color.parseColor("#FEFE3F"));
-        colorCodeSpans['f'] = new ForegroundColorSpan(Color.parseColor("#FFFFFF"));
+        colorCodeSpans['a'] = Color.parseColor("#3FFE3F");
+        colorCodeSpans['b'] = Color.parseColor("#3FFEFE");
+        colorCodeSpans['c'] = Color.parseColor("#FE3F3F");
+        colorCodeSpans['d'] = Color.parseColor("#FE3FFE");
+        colorCodeSpans['e'] = Color.parseColor("#FEFE3F");
+        colorCodeSpans['f'] = Color.parseColor("#FFFFFF");
     }
 
     public static Spannable formatString(String string) {
@@ -74,13 +74,13 @@ public class ChatFormatterUtility {
                 if(pos < 0)
                     endPos = noColorCode.length();
                 if(endPos != startPos) {
-                    stringBuilder.setSpan(colorCodeSpans[currentColor], startPos, endPos, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    stringBuilder.setSpan(new ForegroundColorSpan(colorCodeSpans[currentColor]), startPos, endPos, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     if (bold && italic)
-                        stringBuilder.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), startPos, endPos, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                        stringBuilder.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), startPos, endPos, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     else if (bold)
-                        stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), startPos, endPos, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                        stringBuilder.setSpan(new StyleSpan(Typeface.BOLD), startPos, endPos, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     else if (italic)
-                        stringBuilder.setSpan(new StyleSpan(Typeface.ITALIC), startPos, endPos, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                        stringBuilder.setSpan(new StyleSpan(Typeface.ITALIC), startPos, endPos, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
 
