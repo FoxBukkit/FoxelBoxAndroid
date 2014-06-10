@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;

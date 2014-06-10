@@ -1,20 +1,13 @@
 package de.doridian.foxelbox.app;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.*;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.ActionBar;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
 import android.widget.EditText;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
