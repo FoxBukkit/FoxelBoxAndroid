@@ -103,7 +103,7 @@ public class WebUtility {
         lastURL = url;
         lastData = data;
         onPreExecute();
-        new Thread() {
+        Thread t = new Thread() {
             @Override
             public void run() {
                 final JSONObject ret = doInBackground(url, data);
@@ -114,7 +114,9 @@ public class WebUtility {
                     }
                 });
             }
-        }.start();
+        };
+        t.setDaemon(true);
+        t.start();
     }
 
     private void _invalidateViewActionsMenu() {

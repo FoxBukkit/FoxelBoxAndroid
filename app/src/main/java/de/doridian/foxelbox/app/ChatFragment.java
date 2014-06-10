@@ -89,7 +89,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         private void doRun() {
             if(!isRunning || chatPollWebUtility != this)
                 return;
-            new Thread() {
+            Thread t = new Thread() {
                 @Override
                 public void run() {
                     try {
@@ -97,7 +97,9 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                     } catch (Exception e) { }
                     execute();
                 }
-            }.start();
+            };
+            t.setDaemon(true);
+            t.start();
         }
 
         @Override
