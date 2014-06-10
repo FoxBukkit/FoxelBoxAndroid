@@ -14,6 +14,8 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class ChatPollService extends Service {
+    private static final int MAX_MESSAGES = 100;
+
     private double lastTime = 0;
     private final ArrayList<Spannable> messageCache = new ArrayList<Spannable>();
     private static ChatPollWebUtility chatPollWebUtility = null;
@@ -105,7 +107,7 @@ public class ChatPollService extends Service {
         protected void onSuccess(JSONObject result) throws JSONException {
             lastTime = result.getDouble("time");
             final JSONArray messages = result.getJSONArray("messages");
-            final ArrayList<Spannable> myMessageCache;
+            final ArrayList<Spannable> myMessageCache = new ArrayList<Spannable>();
 
             synchronized (messageCache) {
                 for (int i = messages.length() - 1; i >= 0; i--) {
@@ -113,16 +115,18 @@ public class ChatPollService extends Service {
                     String messagePlain = message.getJSONObject("contents").getString("plain");
                     Spannable messageFormatted = ChatFormatterUtility.formatString(messagePlain);
                     messageCache.add(messageFormatted);
+                    myMessageCache.add(messageFormatted);
                 }
 
-                myMessageCache = new ArrayList<Spannable>(messageCache);
+                while(messageCache.size() > MAX_MESSAGES)
+                    messageCache.remove(0);
             }
 
             synchronized (chatReceivers) {
                 for (final ChatMessageReceiver chatMessageReceiver : chatReceivers) {
                     Thread t = new Thread() {
                         public void run() {
-                            chatMessageReceiver.chatMessagesReceived(myMessageCache);
+                            chatMessageReceiver.chatMessagesReceived(new ArrayDeque<Spannable>(myMessageCache));
                         }
                     };
                     t.setDaemon(true);

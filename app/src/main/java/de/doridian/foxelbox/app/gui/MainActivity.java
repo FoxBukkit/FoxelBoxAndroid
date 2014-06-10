@@ -41,14 +41,13 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        startService(new Intent(this, ChatPollService.class));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         needLogin();
+        startService(new Intent(this, ChatPollService.class));
     }
 
     private void needLogin() {
