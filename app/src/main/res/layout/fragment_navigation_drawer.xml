@@ -6,4 +6,4 @@
     android:divider="@android:color/transparent"
     android:dividerHeight="0dp"
     android:background="#c111"
-    tools:context="de.doridian.foxelbox.app.NavigationDrawerFragment" />
+    tools:context="de.doridian.foxelbox.app.gui.NavigationDrawerFragment" />

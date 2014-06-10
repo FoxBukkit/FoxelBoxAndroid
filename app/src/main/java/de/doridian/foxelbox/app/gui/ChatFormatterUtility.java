@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app;
+package de.doridian.foxelbox.app.gui;
 
 import android.graphics.Color;
 import android.graphics.Typeface;

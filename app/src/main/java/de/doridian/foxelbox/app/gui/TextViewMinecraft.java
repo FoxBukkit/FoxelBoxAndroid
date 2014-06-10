@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app;
+package de.doridian.foxelbox.app.gui;
 
 import android.content.Context;
 import android.text.Spannable;

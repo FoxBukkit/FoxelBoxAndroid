@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app;
+package de.doridian.foxelbox.app.gui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -14,6 +14,7 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import de.doridian.foxelbox.app.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.

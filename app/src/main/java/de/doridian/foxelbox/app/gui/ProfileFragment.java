@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app;
+package de.doridian.foxelbox.app.gui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import de.doridian.foxelbox.app.R;
+import de.doridian.foxelbox.app.util.WebUtility;
 import org.json.JSONException;
 import org.json.JSONObject;
 

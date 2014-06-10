@@ -2,7 +2,7 @@
 
 <menu xmlns:tools="http://schemas.android.com/tools"
       xmlns:android="http://schemas.android.com/apk/res/android"
-      tools:context="de.doridian.foxelbox.app.MainActivity">
+      tools:context="de.doridian.foxelbox.app.gui.MainActivity">
     <item android:id="@+id/menuLoaderSpinner"
           android:showAsAction="always"
           android:title="@string/loading_string"/>

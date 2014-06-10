@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app;
+package de.doridian.foxelbox.app.util;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,12 +40,12 @@ public class LoginUtility extends WebUtility {
     public void login() {
         if(!enabled)
             return;
-        execute("login/auth", WebUtility.encodeData(false, "username", username, "password", password));
+        execute("login/auth", encodeData(false, "username", username, "password", password));
     }
 
     public void logout() {
         enabled = false;
-        execute("login/logout", WebUtility.encodeData(true));
+        execute("login/logout", encodeData(true));
         session_id = null;
     }
 
