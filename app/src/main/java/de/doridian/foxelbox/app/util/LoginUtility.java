@@ -16,7 +16,7 @@ public class LoginUtility extends WebUtility {
     public static String password = null;
 
     public static boolean hasSessionId() {
-        return session_id == null || session_id.isEmpty();
+        return session_id != null && !session_id.isEmpty();
     }
 
     private static final String PREF_USERNAME = "foxelbox_username";

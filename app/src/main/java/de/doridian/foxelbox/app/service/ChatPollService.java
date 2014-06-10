@@ -90,7 +90,7 @@ public class ChatPollService extends Service {
             if(!isRunning || chatPollWebUtility != this)
                 return;
 
-            if(LoginUtility.hasSessionId()) {
+            if(!LoginUtility.hasSessionId()) {
                 doRun(true);
                 return;
             }

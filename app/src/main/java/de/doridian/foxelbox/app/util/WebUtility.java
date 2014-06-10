@@ -111,11 +111,11 @@ public class WebUtility {
                     onPostExecute(ret);
                 else
                     activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onPostExecute(ret);
-                    }
-                });
+                        @Override
+                        public void run() {
+                            onPostExecute(ret);
+                        }
+                    });
             }
         };
         t.setDaemon(true);
@@ -167,8 +167,11 @@ public class WebUtility {
 
         try {
             if (result.has("success") && result.getBoolean("success")) {
-                if(result.has("session_id"))
-                    LoginUtility.session_id = result.getString("session_id");
+                if(result.has("session_id")) {
+                    final String session_id = result.getString("session_id");
+                    if(session_id != null && !session_id.isEmpty())
+                        LoginUtility.session_id = session_id;
+                }
                 onSuccess(result.getJSONObject("result"));
             } else {
                 if(result.has("retry") && result.getBoolean("retry") && LoginUtility.enabled) {
