@@ -7,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.*;
 import android.widget.EditText;
 import de.doridian.foxelbox.app.R;
+import de.doridian.foxelbox.app.service.ChatPollService;
 import de.doridian.foxelbox.app.util.LoginUtility;
 import de.doridian.foxelbox.app.util.WebUtility;
 import org.json.JSONException;
@@ -40,6 +41,8 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        startService(new Intent(this, ChatPollService.class));
     }
 
     @Override
@@ -159,7 +162,7 @@ public class MainActivity extends Activity
 
                     private void onDone() {
                         logoutDialog.dismiss();
-                        ChatFragment.resetChatMessages();
+                        stopService(new Intent(MainActivity.this, ChatPollService.class));
                         Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.addCategory(Intent.CATEGORY_HOME);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

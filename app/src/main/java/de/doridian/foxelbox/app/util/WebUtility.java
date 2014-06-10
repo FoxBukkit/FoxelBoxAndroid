@@ -107,7 +107,10 @@ public class WebUtility {
             @Override
             public void run() {
                 final JSONObject ret = doInBackground(url, data);
-                activity.runOnUiThread(new Runnable() {
+                if(activity == null)
+                    onPostExecute(ret);
+                else
+                    activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         onPostExecute(ret);
@@ -120,6 +123,8 @@ public class WebUtility {
     }
 
     private void _invalidateViewActionsMenu() {
+        if(activity == null)
+            return;
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -179,7 +184,8 @@ public class WebUtility {
 
     protected void onError(String message) throws JSONException {
         Log.w("foxelbox_api", message, new Throwable());
-        Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
+        if(context != null)
+            Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
     }
 
     protected void onSuccess(JSONObject result) throws JSONException { }

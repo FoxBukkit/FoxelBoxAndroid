@@ -1,6 +1,8 @@
 package de.doridian.foxelbox.app.gui;
 
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +26,7 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        final ArrayAdapter<String> items = new ArrayAdapter<String>(fragmentView.getContext(), R.layout.text_view_minecraft);
+        final ArrayAdapter<Spannable> items = new ArrayAdapter<Spannable>(fragmentView.getContext(), android.R.layout.simple_list_item_1);
         ((ListView)fragmentView.findViewById(R.id.profileFieldList)).setAdapter(items);
 
         return fragmentView;
@@ -35,8 +37,8 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         super.onActivityCreated(savedInstanceState);
 
         View fragmentView = getView();
-        final ArrayAdapter<String> items = (ArrayAdapter<String>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
-        items.add("Please wait. Loading...");
+        final ArrayAdapter<Spannable> items = (ArrayAdapter<Spannable>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
+        items.add(new SpannableString("Please wait. Loading..."));
 
         new WebUtility(getActivity(), fragmentView.getContext()) {
             @Override
@@ -48,7 +50,7 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
                 while(keyIterator.hasNext()) {
                     key = (String)keyIterator.next();
                     value = result.getString(key);
-                    items.add(key + ": " + value);
+                    items.add(ChatFormatterUtility.formatString(key + ": " + value));
                 }
             }
         }.execute("profile", WebUtility.encodeData("uuid", "myself"));

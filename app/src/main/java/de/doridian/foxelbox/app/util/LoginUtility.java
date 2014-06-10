@@ -10,10 +10,10 @@ import org.json.JSONObject;
 public class LoginUtility extends WebUtility {
     private final WebUtility runOnSuccess;
 
-    protected static boolean enabled = false;
+    public static boolean enabled = false;
     protected static String session_id = null;
-    protected static String username = null;
-    protected static String password = null;
+    public static String username = null;
+    public static String password = null;
 
     public static boolean hasSessionId() {
         return session_id == null || session_id.isEmpty();
