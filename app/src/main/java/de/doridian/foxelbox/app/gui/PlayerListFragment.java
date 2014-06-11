@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import de.doridian.foxelbox.app.R;
+import de.doridian.foxelbox.app.data.MCPlayer;
 import de.doridian.foxelbox.app.util.WebUtility;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +19,27 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
 
     public PlayerListFragment(int sectionNumber) {
         super(sectionNumber);
+    }
+
+    private class PlayerListItem extends CategoricListArrayAdapter.CategoricListItem {
+        private final MCPlayer player;
+
+        private PlayerListItem(MCPlayer player) {
+            super(ChatFormatterUtility.formatString(player.getDisplayName()));
+            this.player = player;
+        }
+
+        @Override
+        public View getView(LayoutInflater inflater, View convertView) {
+            final View view = super.getView(inflater, convertView);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MainActivity)getActivity()).openPlayerProfile(player);
+                }
+            });
+            return view;
+        }
     }
 
     private void refreshPlayerList() {
@@ -36,7 +58,10 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
                     items.add(new CategoricListArrayAdapter.CategoricListHeader(key));
                     for(int i = 0; i < playerLen; i++) {
                         JSONObject playerInfo = players.getJSONObject(i);
-                        items.add(new CategoricListArrayAdapter.CategoricListItem(ChatFormatterUtility.formatString(playerInfo.getString("display_name"))));
+                        MCPlayer player = new MCPlayer(playerInfo.getString("uuid"));
+                        player.setDisplayName(playerInfo.getString("display_name"));
+                        player.setName(playerInfo.getString("name"));
+                        items.add(new PlayerListItem(player));
                     }
                 }
             }

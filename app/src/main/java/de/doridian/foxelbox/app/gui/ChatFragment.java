@@ -75,7 +75,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             }
         });
 
-        ArrayAdapter<Spannable> items = new ArrayAdapter<Spannable>(fragmentView.getContext(), R.layout.list_item_small);
+        ArrayAdapter<Spannable> items = new ArrayAdapter<Spannable>(fragmentView.getContext(), R.layout.list_item_chat);
         ((ListView)fragmentView.findViewById(R.id.listChatMessages)).setAdapter(items);
 
         return fragmentView;

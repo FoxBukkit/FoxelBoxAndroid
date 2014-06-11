@@ -7,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.*;
 import android.widget.EditText;
 import de.doridian.foxelbox.app.R;
+import de.doridian.foxelbox.app.data.MCPlayer;
 import de.doridian.foxelbox.app.service.ChatPollService;
 import de.doridian.foxelbox.app.util.LoginUtility;
 import de.doridian.foxelbox.app.util.WebUtility;
@@ -121,9 +122,6 @@ public class MainActivity extends Activity
     }
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-
         Fragment fragment;
 
         final int pos = position + 1;
@@ -139,7 +137,7 @@ public class MainActivity extends Activity
                 fragment = new PlayerListFragment(pos);
                 break;
             case 4:
-                fragment = new PlayerListFragment(pos);
+                fragment = new PlaceholderFragment(pos);
                 break;
             case 5:
                 LoginUtility.username = null;
@@ -176,9 +174,28 @@ public class MainActivity extends Activity
                 return;
         }
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+        replaceContentFragment(fragment, false);
+    }
+
+    public void openPlayerProfile(MCPlayer player) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putString("uuid", player.getUuid());
+        profileFragment.setArguments(args);
+        replaceContentFragment(profileFragment, true);
+    }
+
+    public void replaceContentFragment(Fragment fragment, boolean addToStack) {
+        if(addToStack) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+        }
     }
 
     public void onSectionAttached(int number) {
