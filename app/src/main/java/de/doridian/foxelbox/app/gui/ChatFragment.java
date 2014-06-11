@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import java.util.Collection;
 
 public class ChatFragment extends MainActivity.PlaceholderFragment {
+    private static final int MAX_MESSAGES = 1000;
+
     public ChatFragment() { }
 
     public ChatFragment(int sectionNumber) {
@@ -40,7 +42,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                     final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
                     final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>)chatMessageList.getAdapter();
                     chatMessageListAdapter.addAll(messages);
-                    while(chatMessageListAdapter.getCount() > ChatPollService.MAX_MESSAGES)
+                    while(chatMessageListAdapter.getCount() > MAX_MESSAGES)
                         chatMessageListAdapter.remove(chatMessageListAdapter.getItem(0));
                 }
             });

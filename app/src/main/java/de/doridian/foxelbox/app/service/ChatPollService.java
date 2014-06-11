@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class ChatPollService extends Service {
-    public static final int MAX_MESSAGES = 100;
+    private static final int MAX_MESSAGES = 100;
 
     private double lastTime = 0;
     private final ArrayList<Spannable> messageCache = new ArrayList<Spannable>();
