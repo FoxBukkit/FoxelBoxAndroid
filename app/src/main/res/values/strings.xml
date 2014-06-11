@@ -18,5 +18,6 @@
     <string name="title_exit">Exit</string>
     <string name="message_string">Enter message</string>
     <string name="logout_title">Logging out…</string>
+    <string name="title_players">Player list</string>
 
 </resources>

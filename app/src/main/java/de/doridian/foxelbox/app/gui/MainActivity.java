@@ -137,13 +137,16 @@ public class MainActivity extends Activity
                 fragment = new ProfileFragment(pos);
                 break;
             case 3:
-                fragment = new PlaceholderFragment(pos);
+                fragment = new PlayerListFragment(pos);
                 break;
             case 4:
+                fragment = new PlayerListFragment(pos);
+                break;
+            case 5:
                 LoginUtility.username = null;
                 LoginUtility.password = null;
                 LoginUtility.saveCredentials(this);
-            case 5:
+            case 6:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = getLayoutInflater();
                 final Dialog logoutDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_logout, null)).setCancelable(false).create();
@@ -188,6 +191,9 @@ public class MainActivity extends Activity
                 mTitle = getString(R.string.title_me);
                 break;
             case 3:
+                mTitle = getString(R.string.title_players);
+                break;
+            case 4:
                 mTitle = getString(R.string.title_settings);
                 break;
         }
