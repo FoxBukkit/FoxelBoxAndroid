@@ -1,6 +1,5 @@
 package de.doridian.foxelbox.app.gui;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,13 +16,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import de.doridian.foxelbox.app.R;
 import de.doridian.foxelbox.app.service.ChatPollService;
-import de.doridian.foxelbox.app.util.LoginUtility;
 import de.doridian.foxelbox.app.util.WebUtility;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChatFragment extends MainActivity.PlaceholderFragment {
@@ -44,6 +40,8 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                     final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
                     final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>)chatMessageList.getAdapter();
                     chatMessageListAdapter.addAll(messages);
+                    while(chatMessageListAdapter.getCount() > ChatPollService.MAX_MESSAGES)
+                        chatMessageListAdapter.remove(chatMessageListAdapter.getItem(0));
                 }
             });
         }
@@ -84,6 +82,9 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     @Override
     public void onResume() {
         super.onResume();
+        final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
+        final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>)chatMessageList.getAdapter();
+        chatMessageListAdapter.clear();
         getActivity().bindService(new Intent(getActivity(), ChatPollService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -96,7 +97,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     }
 
     public void sendChatMessage(View view) {
-        EditText msgTextField = ((EditText)getView().findViewById(R.id.textChatMessage));
+        EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");
         new WebUtility(getActivity(), view.getContext()) {

@@ -2,7 +2,8 @@ package de.doridian.foxelbox.app.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.*;
+import android.os.Binder;
+import android.os.IBinder;
 import android.text.Spannable;
 import de.doridian.foxelbox.app.gui.ChatFormatterUtility;
 import de.doridian.foxelbox.app.util.LoginUtility;
@@ -14,7 +15,7 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class ChatPollService extends Service {
-    private static final int MAX_MESSAGES = 100;
+    public static final int MAX_MESSAGES = 100;
 
     private double lastTime = 0;
     private final ArrayList<Spannable> messageCache = new ArrayList<Spannable>();
