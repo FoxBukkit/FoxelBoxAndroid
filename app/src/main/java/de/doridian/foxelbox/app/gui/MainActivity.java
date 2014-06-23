@@ -128,19 +128,19 @@ public class MainActivity extends Activity
 
         switch (pos) {
             case 1:
-                fragment = new ChatFragment(pos);
+                fragment = new ChatFragment();
                 break;
             case 2:
-                fragment = new ProfileFragment(pos);
+                fragment = new ProfileFragment();
                 break;
             case 3:
-                fragment = new MapFragment(pos);
+                fragment = new MapFragment();
                 break;
             case 4:
-                fragment = new PlayerListFragment(pos);
+                fragment = new PlayerListFragment();
                 break;
             case 5:
-                fragment = new PlaceholderFragment(pos);
+                fragment = new PlaceholderFragment();
                 break;
             case 6:
                 LoginUtility.username = null;
@@ -176,6 +176,10 @@ public class MainActivity extends Activity
             default:
                 return;
         }
+
+        Bundle args = new Bundle();
+        args.putInt(PlaceholderFragment.ARG_SECTION_NUMBER, pos);
+        fragment.setArguments(args);
 
         replaceContentFragment(fragment, false);
     }
@@ -230,16 +234,6 @@ public class MainActivity extends Activity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-
-        }
-
-        public PlaceholderFragment(int sectionNumber) {
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            setArguments(args);
-        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,

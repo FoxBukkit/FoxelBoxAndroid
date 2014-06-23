@@ -16,18 +16,36 @@ android {
     compileSdkVersion 19
     buildToolsVersion "19.0.3"
 
+    signingConfigs {
+        release {
+            storeFile file("release.jks")
+            storePassword System.getenv("SIGNING_PASSWORD")
+            keyAlias "releasekey"
+            keyPassword System.getenv("SIGNING_PASSWORD")
+        }
+    }
+
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
-            runProguard false
+            debuggable false
+            runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+
+        debug {
+            debuggable true
+            runProguard false
         }
     }
+
 }
 
 dependencies {

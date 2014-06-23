@@ -25,12 +25,6 @@ import java.util.Collection;
 public class ChatFragment extends MainActivity.PlaceholderFragment {
     private static final int MAX_MESSAGES = 1000;
 
-    public ChatFragment() { }
-
-    public ChatFragment(int sectionNumber) {
-        super(sectionNumber);
-    }
-
     private ChatPollService.ChatBinder chatBinder = null;
 
     private final ChatPollService.ChatMessageReceiver chatMessageReceiver = new ChatPollService.ChatMessageReceiver() {

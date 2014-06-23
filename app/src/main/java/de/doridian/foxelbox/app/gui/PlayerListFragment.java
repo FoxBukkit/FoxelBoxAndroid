@@ -15,12 +15,6 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 public class PlayerListFragment extends MainActivity.PlaceholderFragment {
-    public PlayerListFragment() { }
-
-    public PlayerListFragment(int sectionNumber) {
-        super(sectionNumber);
-    }
-
     private class PlayerListItem extends CategoricListArrayAdapter.CategoricListItem {
         private final MCPlayer player;
 

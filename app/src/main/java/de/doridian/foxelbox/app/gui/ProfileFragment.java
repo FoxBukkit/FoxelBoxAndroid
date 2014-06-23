@@ -16,12 +16,6 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
-    public ProfileFragment() { }
-
-    public ProfileFragment(int sectionNumber) {
-        super(sectionNumber);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
