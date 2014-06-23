@@ -91,6 +91,7 @@ public class NavigationDrawerFragment extends Fragment {
                 new String[]{
                         getString(R.string.title_chat),
                         getString(R.string.title_me),
+                        getString(R.string.title_main_server_map),
                         getString(R.string.title_players),
                         getString(R.string.title_settings),
                         getString(R.string.title_logout),

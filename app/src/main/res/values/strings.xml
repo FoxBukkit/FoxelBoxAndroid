@@ -19,5 +19,6 @@
     <string name="message_string">Enter message</string>
     <string name="logout_title">Logging out…</string>
     <string name="title_players">Player list</string>
+    <string name="title_main_server_map">Main server map</string>
 
 </resources>
