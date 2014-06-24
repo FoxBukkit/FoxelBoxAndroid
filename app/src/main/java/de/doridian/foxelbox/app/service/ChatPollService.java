@@ -117,10 +117,12 @@ public class ChatPollService extends Service {
                 synchronized (messageCache) {
                     for (int i = messages.length() - 1; i >= 0; i--) {
                         JSONObject message = messages.getJSONObject(i);
-                        String messagePlain = message.getJSONObject("contents").getString("plain");
-                        Spannable messageFormatted = ChatFormatterUtility.formatString(messagePlain);
-                        messageCache.add(messageFormatted);
-                        myMessageCache.add(messageFormatted);
+                        if(message.getString("type").equals("text")) {
+                            String messagePlain = message.getJSONObject("contents").getString("plain");
+                            Spannable messageFormatted = ChatFormatterUtility.formatString(messagePlain);
+                            messageCache.add(messageFormatted);
+                            myMessageCache.add(messageFormatted);
+                        }
                     }
 
                     while(messageCache.size() > MAX_MESSAGES)
