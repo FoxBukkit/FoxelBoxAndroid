@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app.gui;
+package com.foxelbox.app.gui;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,9 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import de.doridian.foxelbox.app.R;
-import de.doridian.foxelbox.app.service.ChatPollService;
-import de.doridian.foxelbox.app.util.WebUtility;
+import com.foxelbox.app.R;
+import com.foxelbox.app.service.ChatPollService;
+import com.foxelbox.app.util.WebUtility;
 import org.json.JSONException;
 import org.json.JSONObject;
 

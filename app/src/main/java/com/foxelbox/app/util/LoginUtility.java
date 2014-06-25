@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app.util;
+package com.foxelbox.app.util;
 
 import android.app.Activity;
 import android.content.Context;

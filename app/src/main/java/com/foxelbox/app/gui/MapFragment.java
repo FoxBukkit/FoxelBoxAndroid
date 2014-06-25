@@ -1,11 +1,11 @@
-package de.doridian.foxelbox.app.gui;
+package com.foxelbox.app.gui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import de.doridian.foxelbox.app.R;
+import com.foxelbox.app.R;
 
 public class MapFragment extends MainActivity.PlaceholderFragment {
     @Override

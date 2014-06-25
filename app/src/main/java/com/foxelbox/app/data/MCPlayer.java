@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app.data;
+package com.foxelbox.app.data;
 
 public class MCPlayer {
     private final String uuid;

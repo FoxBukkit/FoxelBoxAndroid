@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app.gui;
+package com.foxelbox.app.gui;
 
 import android.content.Context;
 import android.text.Spannable;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import de.doridian.foxelbox.app.R;
+import com.foxelbox.app.R;
 
 public class CategoricListArrayAdapter extends ArrayAdapter<CategoricListArrayAdapter.ICategoricListItem> {
     private final LayoutInflater mInflater;

@@ -1,13 +1,13 @@
-package de.doridian.foxelbox.app.service;
+package com.foxelbox.app.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.Spannable;
-import de.doridian.foxelbox.app.gui.ChatFormatterUtility;
-import de.doridian.foxelbox.app.util.LoginUtility;
-import de.doridian.foxelbox.app.util.WebUtility;
+import com.foxelbox.app.gui.ChatFormatterUtility;
+import com.foxelbox.app.util.LoginUtility;
+import com.foxelbox.app.util.WebUtility;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

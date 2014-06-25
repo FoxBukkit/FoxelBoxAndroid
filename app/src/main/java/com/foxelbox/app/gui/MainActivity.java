@@ -1,4 +1,4 @@
-package de.doridian.foxelbox.app.gui;
+package com.foxelbox.app.gui;
 
 import android.app.*;
 import android.content.Intent;
@@ -6,11 +6,11 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
 import android.widget.EditText;
-import de.doridian.foxelbox.app.R;
-import de.doridian.foxelbox.app.data.MCPlayer;
-import de.doridian.foxelbox.app.service.ChatPollService;
-import de.doridian.foxelbox.app.util.LoginUtility;
-import de.doridian.foxelbox.app.util.WebUtility;
+import com.foxelbox.app.R;
+import com.foxelbox.app.data.MCPlayer;
+import com.foxelbox.app.service.ChatPollService;
+import com.foxelbox.app.util.LoginUtility;
+import com.foxelbox.app.util.WebUtility;
 import org.json.JSONException;
 import org.json.JSONObject;
 
