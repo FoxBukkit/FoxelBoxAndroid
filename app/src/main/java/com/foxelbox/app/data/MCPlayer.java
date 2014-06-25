@@ -1,15 +1,24 @@
 package com.foxelbox.app.data;
 
+import com.foxelbox.app.json.UserInfo;
+
+import java.util.UUID;
+
 public class MCPlayer {
-    private final String uuid;
+    private final UUID uuid;
     private String displayName;
     private String name;
 
-    public MCPlayer(String uuid) {
+    public MCPlayer(UUID uuid) {
         this.uuid = uuid;
     }
 
-    public String getUuid() {
+    public MCPlayer(UserInfo userInfo) {
+        this.uuid = userInfo.uuid;
+        this.name = userInfo.name;
+    }
+
+    public UUID getUuid() {
         return uuid;
     }
 

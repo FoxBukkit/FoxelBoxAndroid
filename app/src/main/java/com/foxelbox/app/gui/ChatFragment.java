@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.foxelbox.app.R;
+import com.foxelbox.app.json.ChatMessageOut;
 import com.foxelbox.app.service.ChatPollService;
 import com.foxelbox.app.util.WebUtility;
 import org.json.JSONException;
@@ -29,13 +30,16 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
 
     private final ChatPollService.ChatMessageReceiver chatMessageReceiver = new ChatPollService.ChatMessageReceiver() {
         @Override
-        public void chatMessagesReceived(final Collection<Spannable> messages) {
+        public void chatMessagesReceived(final Collection<ChatMessageOut> messages) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
                     final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>)chatMessageList.getAdapter();
-                    chatMessageListAdapter.addAll(messages);
+                    for(ChatMessageOut message : messages) {
+                        if(message.type.equals("text"))
+                            chatMessageListAdapter.add(message.contents.getFormatted());
+                    }
                     while(chatMessageListAdapter.getCount() > MAX_MESSAGES)
                         chatMessageListAdapter.remove(chatMessageListAdapter.getItem(0));
                 }

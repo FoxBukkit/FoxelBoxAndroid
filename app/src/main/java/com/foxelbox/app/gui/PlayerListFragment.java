@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     private class PlayerListItem extends CategoricListArrayAdapter.CategoricListItem {
@@ -52,7 +53,7 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
                     items.add(new CategoricListArrayAdapter.CategoricListHeader(key));
                     for(int i = 0; i < playerLen; i++) {
                         JSONObject playerInfo = players.getJSONObject(i);
-                        MCPlayer player = new MCPlayer(playerInfo.getString("uuid"));
+                        MCPlayer player = new MCPlayer(UUID.fromString(playerInfo.getString("uuid")));
                         player.setDisplayName(playerInfo.getString("display_name"));
                         player.setName(playerInfo.getString("name"));
                         items.add(new PlayerListItem(player));

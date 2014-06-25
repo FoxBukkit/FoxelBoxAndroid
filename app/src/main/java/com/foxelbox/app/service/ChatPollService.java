@@ -6,8 +6,10 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.text.Spannable;
 import com.foxelbox.app.gui.ChatFormatterUtility;
+import com.foxelbox.app.json.ChatMessageOut;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +20,7 @@ public class ChatPollService extends Service {
     private static final int MAX_MESSAGES = 100;
 
     private double lastTime = 0;
-    private final ArrayList<Spannable> messageCache = new ArrayList<Spannable>();
+    private final ArrayList<ChatMessageOut> messageCache = new ArrayList<ChatMessageOut>();
     private static ChatPollWebUtility chatPollWebUtility = null;
     private final Set<ChatMessageReceiver> chatReceivers = Collections.newSetFromMap(new HashMap<ChatMessageReceiver, Boolean>());
 
@@ -50,16 +52,16 @@ public class ChatPollService extends Service {
     }
 
     public interface ChatMessageReceiver {
-        public void chatMessagesReceived(Collection<Spannable> messages);
+        public void chatMessagesReceived(Collection<ChatMessageOut> messages);
     }
 
     public class ChatBinder extends Binder {
         public void addReceiver(ChatMessageReceiver receiver, boolean sendExisting) {
             synchronized (chatReceivers) {
                 if(sendExisting) {
-                    final ArrayList<Spannable> myMessageCache;
+                    final ArrayList<ChatMessageOut> myMessageCache;
                     synchronized (messageCache) {
-                        myMessageCache = new ArrayList<Spannable>(messageCache);
+                        myMessageCache = new ArrayList<ChatMessageOut>(messageCache);
                     }
                     receiver.chatMessagesReceived(myMessageCache);
                 }
@@ -77,6 +79,11 @@ public class ChatPollService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return new ChatBinder();
+    }
+
+    private static class ChatPollResult {
+        public double time;
+        public ChatMessageOut[] messages;
     }
 
     private class ChatPollWebUtility extends WebUtility {
@@ -110,19 +117,17 @@ public class ChatPollService extends Service {
                 return;
 
             lastTime = result.getDouble("time");
-            final JSONArray messages = result.getJSONArray("messages");
+
+            final ChatMessageOut[] messages = new Gson().fromJson(result.getJSONArray("messages").toString(), ChatMessageOut[].class);
+
             synchronized (chatReceivers) {
-                final ArrayList<Spannable> myMessageCache = new ArrayList<Spannable>();
+                final ArrayList<ChatMessageOut> myMessageCache = new ArrayList<ChatMessageOut>();
 
                 synchronized (messageCache) {
-                    for (int i = messages.length() - 1; i >= 0; i--) {
-                        JSONObject message = messages.getJSONObject(i);
-                        if(message.getString("type").equals("text")) {
-                            String messagePlain = message.getJSONObject("contents").getString("plain");
-                            Spannable messageFormatted = ChatFormatterUtility.formatString(messagePlain);
-                            messageCache.add(messageFormatted);
-                            myMessageCache.add(messageFormatted);
-                        }
+                    for(ChatMessageOut message : messages) {
+                        message.contents.getFormatted();
+                        messageCache.add(message);
+                        myMessageCache.add(message);
                     }
 
                     while(messageCache.size() > MAX_MESSAGES)
@@ -132,7 +137,7 @@ public class ChatPollService extends Service {
                 for (final ChatMessageReceiver chatMessageReceiver : chatReceivers) {
                     Thread t = new Thread() {
                         public void run() {
-                            chatMessageReceiver.chatMessagesReceived(new ArrayDeque<Spannable>(myMessageCache));
+                            chatMessageReceiver.chatMessagesReceived(new ArrayDeque<ChatMessageOut>(myMessageCache));
                         }
                     };
                     t.setDaemon(true);

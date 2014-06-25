@@ -187,7 +187,7 @@ public class MainActivity extends Activity
     public void openPlayerProfile(MCPlayer player) {
         ProfileFragment profileFragment = new ProfileFragment();
         Bundle args = new Bundle();
-        args.putString("uuid", player.getUuid());
+        args.putSerializable("uuid", player.getUuid());
         profileFragment.setArguments(args);
         replaceContentFragment(profileFragment, true);
     }

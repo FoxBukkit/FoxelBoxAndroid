@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
     @Override
@@ -34,6 +35,11 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         final ArrayAdapter<Spannable> items = (ArrayAdapter<Spannable>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
         items.add(new SpannableString("Please wait. Loading..."));
 
+        String myUUID = "myself";
+        Bundle arguments = getArguments();
+        if(arguments.containsKey("uuid"))
+            myUUID = getArguments().getSerializable("uuid").toString();
+
         new WebUtility(getActivity(), fragmentView.getContext()) {
             @Override
             protected void onSuccess(JSONObject result) throws JSONException {
@@ -47,6 +53,6 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
                     items.add(ChatFormatterUtility.formatString(key + ": " + value));
                 }
             }
-        }.execute("player/info", WebUtility.encodeData("uuid", getArguments().getString("uuid", "myself")));
+        }.execute("player/info", WebUtility.encodeData("uuid", myUUID));
     }
 }
