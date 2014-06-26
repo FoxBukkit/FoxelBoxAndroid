@@ -14,28 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FoxBukkitChatLink.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.foxelbox.app.json;
+package com.foxelbox.app.json.chat;
 
-import java.util.UUID;
-
-public class ChatMessageOut {
-    public ChatMessageOut(String server, UserInfo from, String plain, String xml) {
-        this.server = server;
-        this.from = from;
-        this.to = new MessageTarget("all", null);
-        this.contents = new MessageContents(plain, xml);
-        this.context = UUID.randomUUID();
+public class MessageTarget {
+    public MessageTarget(String type, String[] filter) {
+        this.type = type;
+        this.filter = filter;
     }
 
-    public final String server;
-    public final UserInfo from;
-    public final MessageTarget to;
-
-    public final long timestamp = System.currentTimeMillis() / 1000;
-
-    public final UUID context;
-    public final boolean finalize_context = false;
-    public final String type = "text";
-
-    public final MessageContents contents;
+    public final String type;
+    public final String[] filter;
 }

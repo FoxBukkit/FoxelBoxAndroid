@@ -4,15 +4,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.text.Spannable;
-import com.foxelbox.app.gui.ChatFormatterUtility;
-import com.foxelbox.app.json.ChatMessageOut;
+import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.chat.ChatMessageOut;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
-import com.google.gson.Gson;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.*;
 
@@ -81,12 +76,12 @@ public class ChatPollService extends Service {
         return new ChatBinder();
     }
 
-    private static class ChatPollResult {
+    private static class ChatPollResult extends BaseResponse {
         public double time;
         public ChatMessageOut[] messages;
     }
 
-    private class ChatPollWebUtility extends WebUtility {
+    private class ChatPollWebUtility extends WebUtility<ChatPollResult> {
         private boolean inProgress = false;
 
         private ChatPollWebUtility() {
@@ -107,24 +102,32 @@ public class ChatPollService extends Service {
         }
 
         @Override
+        public ChatPollResult createResponse() {
+            return new ChatPollResult();
+        }
+
+        @Override
+        public Class<ChatPollResult> getResponseClass() {
+            return ChatPollResult.class;
+        }
+
+        @Override
         public boolean isLongPoll() {
             return true;
         }
 
         @Override
-        protected void onSuccess(JSONObject result) throws JSONException {
+        protected void onSuccess(ChatPollResult result) {
             if(chatPollWebUtility != this)
                 return;
 
-            lastTime = result.getDouble("time");
-
-            final ChatMessageOut[] messages = new Gson().fromJson(result.getJSONArray("messages").toString(), ChatMessageOut[].class);
+            lastTime = result.time;
 
             synchronized (chatReceivers) {
                 final ArrayList<ChatMessageOut> myMessageCache = new ArrayList<ChatMessageOut>();
 
                 synchronized (messageCache) {
-                    for(ChatMessageOut message : messages) {
+                    for(ChatMessageOut message : result.messages) {
                         message.contents.getFormatted();
                         messageCache.add(message);
                         myMessageCache.add(message);
@@ -170,7 +173,7 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        protected void onError(String message) throws JSONException {
+        protected void onError(String message) {
             super.onError(message);
             inProgress = false;
             doRun(true);

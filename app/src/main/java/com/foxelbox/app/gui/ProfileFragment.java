@@ -9,12 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.foxelbox.app.R;
+import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.util.WebUtility;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Iterator;
-import java.util.UUID;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
     @Override
@@ -25,6 +23,16 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         ((ListView)fragmentView.findViewById(R.id.profileFieldList)).setAdapter(items);
 
         return fragmentView;
+    }
+
+    static class ProfileField {
+        public String name;
+        public String title;
+        public String value;
+    }
+
+    static class ProfileResponse extends BaseResponse {
+        ProfileField[] fields;
     }
 
     @Override
@@ -40,18 +48,23 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         if(arguments.containsKey("uuid"))
             myUUID = getArguments().getSerializable("uuid").toString();
 
-        new WebUtility(getActivity(), fragmentView.getContext()) {
+        new WebUtility<ProfileResponse>(getActivity(), fragmentView.getContext()) {
             @Override
-            protected void onSuccess(JSONObject result) throws JSONException {
+            public ProfileResponse createResponse() {
+                return new ProfileResponse();
+            }
+
+            @Override
+            public Class<ProfileResponse> getResponseClass() {
+                return ProfileResponse.class;
+            }
+
+            @Override
+            protected void onSuccess(ProfileResponse result) {
                 super.onSuccess(result);
-                Iterator keyIterator = result.keys();
-                String key, value;
                 items.clear();
-                while(keyIterator.hasNext()) {
-                    key = (String)keyIterator.next();
-                    value = result.getString(key);
-                    items.add(ChatFormatterUtility.formatString(key + ": " + value));
-                }
+                for(ProfileField field : result.fields)
+                    items.add(ChatFormatterUtility.formatString(field.title + ": " + field.value));
             }
         }.execute("player/info", WebUtility.encodeData("uuid", myUUID));
     }

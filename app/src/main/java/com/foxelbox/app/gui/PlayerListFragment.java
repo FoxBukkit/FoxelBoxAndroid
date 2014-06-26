@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
+import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.util.WebUtility;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
@@ -37,25 +37,43 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
         }
     }
 
+    public class PlayerListPlayer {
+        public UUID uuid;
+        public String name;
+        public String display_name;
+    }
+
+    public class PlayerListServer {
+        public String server;
+        public PlayerListPlayer[] players;
+    }
+
+    public class PlayerListResponse extends BaseResponse {
+        public PlayerListServer[] list;
+    }
+
     private void refreshPlayerList() {
-        new WebUtility(getActivity()) {
+        new WebUtility<PlayerListResponse>(getActivity()) {
             @Override
-            protected void onSuccess(JSONObject result) throws JSONException {
+            public PlayerListResponse createResponse() {
+                return new PlayerListResponse();
+            }
+
+            @Override
+            public Class<PlayerListResponse> getResponseClass() {
+                return PlayerListResponse.class;
+            }
+
+            @Override
+            protected void onSuccess(PlayerListResponse result) {
                 final CategoricListArrayAdapter items = (CategoricListArrayAdapter)((ListView)getView().findViewById(R.id.playerListView)).getAdapter();
                 items.clear();
-                Iterator keyIterator = result.keys();
-                String key; JSONArray players; int playerLen;
-                items.clear();
-                while(keyIterator.hasNext()) {
-                    key = (String)keyIterator.next();
-                    players = result.getJSONArray(key);
-                    playerLen = players.length();
-                    items.add(new CategoricListArrayAdapter.CategoricListHeader(key));
-                    for(int i = 0; i < playerLen; i++) {
-                        JSONObject playerInfo = players.getJSONObject(i);
-                        MCPlayer player = new MCPlayer(UUID.fromString(playerInfo.getString("uuid")));
-                        player.setDisplayName(playerInfo.getString("display_name"));
-                        player.setName(playerInfo.getString("name"));
+                for(PlayerListServer server : result.list) {
+                    items.add(new CategoricListArrayAdapter.CategoricListHeader(server.server));
+                    for(PlayerListPlayer jsonPlayer : server.players) {
+                        MCPlayer player = new MCPlayer(jsonPlayer.uuid);
+                        player.setDisplayName(jsonPlayer.display_name);
+                        player.setName(jsonPlayer.name);
                         items.add(new PlayerListItem(player));
                     }
                 }

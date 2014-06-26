@@ -4,23 +4,39 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.foxelbox.app.json.BaseResponse;
+import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebUtility {
+public abstract class WebUtility<RT extends BaseResponse> {
     //public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
     public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
+
+    public static class SimpleWebUtility extends WebUtility<BaseResponse> {
+        public SimpleWebUtility(Activity activity) {
+            super(activity);
+        }
+
+        public SimpleWebUtility(Activity activity, Context context) {
+            super(activity, context);
+        }
+
+        @Override
+        public BaseResponse createResponse() {
+            return new BaseResponse();
+        }
+
+        @Override
+        public Class<BaseResponse> getResponseClass() {
+            return BaseResponse.class;
+        }
+    }
 
     public static class HttpErrorException extends Exception {
         public HttpErrorException(String detailMessage) {
@@ -44,6 +60,9 @@ public class WebUtility {
             return null;
         }
     }
+
+    public abstract RT createResponse();
+    public abstract Class<RT> getResponseClass();
 
     public static String encodeData(CharSequence... dataVararg) {
         return encodeData(true, dataVararg);
@@ -106,7 +125,7 @@ public class WebUtility {
         Thread t = new Thread() {
             @Override
             public void run() {
-                final JSONObject ret = doInBackground(url, data);
+                final RT ret = doInBackground(url, data);
                 if(activity == null)
                     onPostExecute(ret);
                 else
@@ -140,23 +159,18 @@ public class WebUtility {
         }
     }
 
-    protected final JSONObject doInBackground(String url, String data) {
+    protected final RT doInBackground(String url, String data) {
         try {
             return tryDownloadURLInternal(url, data);
         } catch (HttpErrorException e) {
-            try {
-                JSONObject errorObject = new JSONObject();
-                errorObject.put("success", false);
-                errorObject.put("message", e.getMessage());
-                return errorObject;
-            } catch (JSONException je) {
-                Log.e("foxelbox", je.getMessage(), je);
-                return null;
-            }
+            RT errorObject = createResponse();
+            errorObject.success = false;
+            errorObject.message = e.getMessage();
+            return errorObject;
         }
     }
 
-    protected final void onPostExecute(JSONObject result) {
+    protected final void onPostExecute(RT result) {
         if(!isLongPoll()) {
             activityCounter--;
             _invalidateViewActionsMenu();
@@ -165,35 +179,28 @@ public class WebUtility {
         if(result == null)
             return;
 
-        try {
-            if (result.has("success") && result.getBoolean("success")) {
-                if(result.has("session_id")) {
-                    final String session_id = result.getString("session_id");
-                    if(session_id != null && !session_id.isEmpty())
-                        LoginUtility.session_id = session_id;
-                }
-                onSuccess(result.getJSONObject("result"));
-            } else {
-                if(result.has("retry") && result.getBoolean("retry") && LoginUtility.enabled) {
-                    new LoginUtility(this, activity, context).login();
-                    return;
-                }
-                onError(result.has("message") ? result.getString("message") : "Unknown error");
+        if (result.success) {
+            if(result.session_id != null && !result.session_id.isEmpty())
+                LoginUtility.session_id = result.session_id;
+            onSuccess(result);
+        } else {
+            if(result.retry && LoginUtility.enabled) {
+                new LoginUtility(this, activity, context).login();
+                return;
             }
-        } catch (JSONException e) {
-            Log.e("foxelbox", e.getMessage(), e);
+            onError((result.message != null && !result.message.isEmpty()) ? result.message : "Unknown error");
         }
     }
 
-    protected void onError(String message) throws JSONException {
+    protected void onError(String message) {
         Log.w("foxelbox_api", message, new Throwable());
         if(context != null)
             Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
     }
 
-    protected void onSuccess(JSONObject result) throws JSONException { }
+    protected void onSuccess(RT result) { }
 
-    private JSONObject tryDownloadURLInternal(String urlStr, String data)  throws HttpErrorException {
+    private RT tryDownloadURLInternal(String urlStr, String data)  throws HttpErrorException {
         InputStream is = null;
 
         try {
@@ -219,12 +226,7 @@ public class WebUtility {
                 throw new HttpErrorException("Response code " + response);
             is = conn.getInputStream();
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] strBuffer = new byte[4096]; int len;
-            while((len = is.read(strBuffer)) > 0)
-                byteArrayOutputStream.write(strBuffer, 0, len);
-
-            return (JSONObject)new JSONTokener(new String(byteArrayOutputStream.toByteArray(), "UTF-8")).nextValue();
+            return new Gson().fromJson(new InputStreamReader(is), getResponseClass());
         } catch (Exception e) {
             throw new HttpErrorException(e.getMessage());
         } finally {

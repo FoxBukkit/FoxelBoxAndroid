@@ -11,8 +11,6 @@ import com.foxelbox.app.data.MCPlayer;
 import com.foxelbox.app.service.ChatPollService;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -78,14 +76,14 @@ public class MainActivity extends Activity
         LoginUtility.enabled = true;
         new LoginUtility(null, this, getApplicationContext()) {
             @Override
-            protected void onSuccess(JSONObject result) throws JSONException {
+            protected void onSuccess(LoginResponse result) {
                 super.onSuccess(result);
                 loginDialog.dismiss();
                 loginDialog = null;
             }
 
             @Override
-            protected void onError(String message) throws JSONException {
+            protected void onError(String message) {
                 super.onError(message);
                 loginDialog.findViewById(R.id.login_button).setEnabled(true);
                 loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
@@ -154,12 +152,12 @@ public class MainActivity extends Activity
 
                 new LoginUtility(null, this, getApplicationContext()) {
                     @Override
-                    protected void onSuccess(JSONObject result) throws JSONException {
+                    protected void onSuccess(LoginResponse result) {
                         onDone();
                     }
 
                     @Override
-                    protected void onError(String message) throws JSONException {
+                    protected void onError(String message) {
                         onDone();
                     }
 

@@ -1,6 +1,6 @@
 package com.foxelbox.app.data;
 
-import com.foxelbox.app.json.UserInfo;
+import com.foxelbox.app.json.chat.UserInfo;
 
 import java.util.UUID;
 

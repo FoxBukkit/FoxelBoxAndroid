@@ -15,11 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.foxelbox.app.R;
-import com.foxelbox.app.json.ChatMessageOut;
+import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.chat.ChatMessageOut;
 import com.foxelbox.app.service.ChatPollService;
 import com.foxelbox.app.util.WebUtility;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Collection;
 
@@ -100,9 +99,9 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");
-        new WebUtility(getActivity(), view.getContext()) {
+        new WebUtility.SimpleWebUtility(getActivity(), view.getContext()) {
             @Override
-            protected void onSuccess(JSONObject result) throws JSONException {
+            protected void onSuccess(BaseResponse result) {
 
             }
         }.execute("message/send", WebUtility.encodeData("message", message));

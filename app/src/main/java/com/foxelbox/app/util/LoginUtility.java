@@ -4,10 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.foxelbox.app.json.BaseResponse;
 
-public class LoginUtility extends WebUtility {
+public class LoginUtility extends WebUtility<LoginUtility.LoginResponse> {
+    public static class LoginResponse extends BaseResponse {
+
+    }
+
+    @Override
+    public LoginResponse createResponse() {
+        return new LoginResponse();
+    }
+
+    @Override
+    public Class<LoginResponse> getResponseClass() {
+        return LoginResponse.class;
+    }
+
     private final WebUtility runOnSuccess;
 
     public static boolean enabled = false;
@@ -50,7 +63,7 @@ public class LoginUtility extends WebUtility {
     }
 
     @Override
-    protected void onSuccess(JSONObject result) throws JSONException {
+    protected void onSuccess(LoginResponse result) {
         super.onSuccess(result);
         if(runOnSuccess != null)
             runOnSuccess.retry();
