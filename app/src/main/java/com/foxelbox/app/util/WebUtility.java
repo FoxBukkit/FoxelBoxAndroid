@@ -2,6 +2,8 @@ package com.foxelbox.app.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 import com.foxelbox.app.json.BaseResponse;
@@ -162,6 +164,14 @@ public abstract class WebUtility<RT extends BaseResponse> {
         }
     }
 
+    protected boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        // if no network is available networkInfo will be null
+        // otherwise check if we are connected
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
     protected final RT doInBackground(String url, String data) {
         try {
             return tryDownloadURLInternal(url, data);
@@ -191,8 +201,13 @@ public abstract class WebUtility<RT extends BaseResponse> {
                 new LoginUtility(this, activity, context).login();
                 return;
             }
-            onError((result.message != null && !result.message.isEmpty()) ? result.message : "Unknown error");
+            onErrorInternal((result.message != null && !result.message.isEmpty()) ? result.message : "Unknown error", new Gson().toJson(result));
         }
+    }
+
+    protected void onErrorInternal(String message, String descr) {
+        Log.w("foxelbox_api", descr, new Throwable());
+        onError(message);
     }
 
     protected void onError(String message) {
