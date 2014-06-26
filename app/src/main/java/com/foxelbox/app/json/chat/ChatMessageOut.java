@@ -37,5 +37,7 @@ public class ChatMessageOut {
     public final boolean finalize_context = false;
     public final String type = "text";
 
+    public final int importance = 0;
+
     public final MessageContents contents;
 }

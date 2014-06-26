@@ -21,7 +21,7 @@ import java.util.Map;
 
 public abstract class WebUtility<RT extends BaseResponse> {
     //public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
-    public static final String API_ENDPOINT = "http://api.foxelbox.com/v1/";
+    public static final String API_ENDPOINT = "https://api.foxelbox.com/v1/";
 
     public static class SimpleWebUtility extends WebUtility<BaseResponse> {
         public SimpleWebUtility(Activity activity) {
