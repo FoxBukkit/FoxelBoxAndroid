@@ -12,8 +12,6 @@ import com.foxelbox.app.R;
 import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.util.WebUtility;
 
-import java.util.Iterator;
-
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

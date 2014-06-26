@@ -9,10 +9,7 @@ import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
 import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.util.WebUtility;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 public class PlayerListFragment extends MainActivity.PlaceholderFragment {
