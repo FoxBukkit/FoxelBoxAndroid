@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
-import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.player.list.PlayerListPlayer;
+import com.foxelbox.app.json.player.list.PlayerListResponse;
+import com.foxelbox.app.json.player.list.PlayerListServer;
 import com.foxelbox.app.util.WebUtility;
-
-import java.util.UUID;
 
 public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     private class PlayerListItem extends CategoricListArrayAdapter.CategoricListItem {
@@ -32,21 +32,6 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
             });
             return view;
         }
-    }
-
-    public class PlayerListPlayer {
-        public UUID uuid;
-        public String name;
-        public String display_name;
-    }
-
-    public class PlayerListServer {
-        public String server;
-        public PlayerListPlayer[] players;
-    }
-
-    public class PlayerListResponse extends BaseResponse {
-        public PlayerListServer[] list;
     }
 
     private void refreshPlayerList() {

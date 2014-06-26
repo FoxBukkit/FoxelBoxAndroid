@@ -4,7 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.ChatPollResponse;
 import com.foxelbox.app.json.chat.ChatMessageOut;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
@@ -76,12 +76,7 @@ public class ChatPollService extends Service {
         return new ChatBinder();
     }
 
-    private static class ChatPollResult extends BaseResponse {
-        public double time;
-        public ChatMessageOut[] messages;
-    }
-
-    private class ChatPollWebUtility extends WebUtility<ChatPollResult> {
+    private class ChatPollWebUtility extends WebUtility<ChatPollResponse> {
         private boolean inProgress = false;
 
         private ChatPollWebUtility() {
@@ -102,13 +97,13 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        public ChatPollResult createResponse() {
-            return new ChatPollResult();
+        public ChatPollResponse createResponse() {
+            return new ChatPollResponse();
         }
 
         @Override
-        public Class<ChatPollResult> getResponseClass() {
-            return ChatPollResult.class;
+        public Class<ChatPollResponse> getResponseClass() {
+            return ChatPollResponse.class;
         }
 
         @Override
@@ -117,7 +112,7 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        protected void onSuccess(ChatPollResult result) {
+        protected void onSuccess(ChatPollResponse result) {
             if(chatPollWebUtility != this)
                 return;
 

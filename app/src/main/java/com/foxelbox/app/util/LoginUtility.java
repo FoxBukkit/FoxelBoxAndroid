@@ -6,19 +6,15 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.foxelbox.app.json.BaseResponse;
 
-public class LoginUtility extends WebUtility<LoginUtility.LoginResponse> {
-    public static class LoginResponse extends BaseResponse {
-
+public class LoginUtility extends WebUtility<BaseResponse> {
+    @Override
+    public BaseResponse createResponse() {
+        return new BaseResponse();
     }
 
     @Override
-    public LoginResponse createResponse() {
-        return new LoginResponse();
-    }
-
-    @Override
-    public Class<LoginResponse> getResponseClass() {
-        return LoginResponse.class;
+    public Class<BaseResponse> getResponseClass() {
+        return BaseResponse.class;
     }
 
     private final WebUtility runOnSuccess;
@@ -63,7 +59,7 @@ public class LoginUtility extends WebUtility<LoginUtility.LoginResponse> {
     }
 
     @Override
-    protected void onSuccess(LoginResponse result) {
+    protected void onSuccess(BaseResponse result) {
         super.onSuccess(result);
         if(runOnSuccess != null)
             runOnSuccess.retry();

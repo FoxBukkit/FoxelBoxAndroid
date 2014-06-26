@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.foxelbox.app.R;
-import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.player.profile.ProfileField;
+import com.foxelbox.app.json.player.profile.ProfileResponse;
 import com.foxelbox.app.util.WebUtility;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
@@ -21,16 +22,6 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         ((ListView)fragmentView.findViewById(R.id.profileFieldList)).setAdapter(items);
 
         return fragmentView;
-    }
-
-    static class ProfileField {
-        public String name;
-        public String title;
-        public String value;
-    }
-
-    static class ProfileResponse extends BaseResponse {
-        ProfileField[] fields;
     }
 
     @Override
