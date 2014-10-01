@@ -15,7 +15,7 @@ public class ChatPollService extends Service {
     private static final int MAX_MESSAGES = 100;
 
     private double lastTime = 0;
-    private final ArrayList<ChatMessageOut> messageCache = new ArrayList<ChatMessageOut>();
+    private final LinkedList<ChatMessageOut> messageCache = new LinkedList<ChatMessageOut>();
     private static ChatPollWebUtility chatPollWebUtility = null;
     private final Set<ChatMessageReceiver> chatReceivers = Collections.newSetFromMap(new HashMap<ChatMessageReceiver, Boolean>());
 
@@ -54,9 +54,9 @@ public class ChatPollService extends Service {
         public void addReceiver(ChatMessageReceiver receiver, boolean sendExisting) {
             synchronized (chatReceivers) {
                 if(sendExisting) {
-                    final ArrayList<ChatMessageOut> myMessageCache;
+                    final LinkedList<ChatMessageOut> myMessageCache;
                     synchronized (messageCache) {
-                        myMessageCache = new ArrayList<ChatMessageOut>(messageCache);
+                        myMessageCache = new LinkedList<ChatMessageOut>(messageCache);
                     }
                     receiver.chatMessagesReceived(myMessageCache);
                 }
@@ -119,7 +119,7 @@ public class ChatPollService extends Service {
             lastTime = result.time;
 
             synchronized (chatReceivers) {
-                final ArrayList<ChatMessageOut> myMessageCache = new ArrayList<ChatMessageOut>();
+                final LinkedList<ChatMessageOut> myMessageCache = new LinkedList<ChatMessageOut>();
 
                 synchronized (messageCache) {
                     for(ChatMessageOut message : result.messages) {
@@ -129,13 +129,13 @@ public class ChatPollService extends Service {
                     }
 
                     while(messageCache.size() > MAX_MESSAGES)
-                        messageCache.remove(0);
+                        messageCache.removeFirst();
                 }
 
                 for (final ChatMessageReceiver chatMessageReceiver : chatReceivers) {
                     Thread t = new Thread() {
                         public void run() {
-                            chatMessageReceiver.chatMessagesReceived(new ArrayDeque<ChatMessageOut>(myMessageCache));
+                            chatMessageReceiver.chatMessagesReceived(new LinkedList<ChatMessageOut>(myMessageCache));
                         }
                     };
                     t.setDaemon(true);
