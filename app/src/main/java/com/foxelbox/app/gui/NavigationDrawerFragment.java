@@ -3,6 +3,7 @@ package com.foxelbox.app.gui;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -75,7 +76,11 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getSupportActionBar() {
-        return ((ActionBarActivity)getActivity()).getSupportActionBar();
+        return getActionBarActivity().getSupportActionBar();
+    }
+
+    private ActionBarActivity getActionBarActivity() {
+        return (ActionBarActivity)getActivity();
     }
 
     @Override
@@ -144,7 +149,7 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
-                getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getActionBarActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -163,7 +168,7 @@ public class NavigationDrawerFragment extends Fragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).commit();
                 }
 
-                getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getActionBarActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };
 

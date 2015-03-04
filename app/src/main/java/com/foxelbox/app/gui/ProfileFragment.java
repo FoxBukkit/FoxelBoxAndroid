@@ -37,7 +37,7 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         if(arguments.containsKey("uuid"))
             myUUID = getArguments().getSerializable("uuid").toString();
 
-        new WebUtility<ProfileResponse>(getActivity(), fragmentView.getContext()) {
+        new WebUtility<ProfileResponse>(getActionBarActivity(), fragmentView.getContext()) {
             @Override
             public ProfileResponse createResponse() {
                 return new ProfileResponse();

@@ -14,7 +14,7 @@ public class MapFragment extends MainActivity.PlaceholderFragment {
 
         WebView webView = (WebView)fragmentView.findViewById(R.id.mapWebView);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("http://mc.foxelbox.com:8123/");
+        webView.loadUrl("https://api.foxelbox.com/map/main");
 
         return fragmentView;
     }

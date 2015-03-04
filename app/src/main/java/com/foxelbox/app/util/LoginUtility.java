@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import com.foxelbox.app.json.BaseResponse;
 
 public class LoginUtility extends WebUtility<BaseResponse> {
@@ -25,7 +26,7 @@ public class LoginUtility extends WebUtility<BaseResponse> {
     public static String password = null;
 
     public static boolean hasSessionId() {
-        return session_id != null && !session_id.isEmpty();
+        return session_id != null && !session_id.equals("");
     }
 
     private static final String PREF_USERNAME = "foxelbox_username";
@@ -41,7 +42,7 @@ public class LoginUtility extends WebUtility<BaseResponse> {
         PreferenceManager.getDefaultSharedPreferences(activity).edit().putString(PREF_USERNAME, username).putString(PREF_PASSWORD, password).commit();
     }
 
-    public LoginUtility(WebUtility runOnSuccess, Activity activity, Context context) {
+    public LoginUtility(WebUtility runOnSuccess, ActionBarActivity activity, Context context) {
         super(activity, context);
         this.runOnSuccess = runOnSuccess;
     }

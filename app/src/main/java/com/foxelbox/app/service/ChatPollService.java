@@ -15,9 +15,9 @@ public class ChatPollService extends Service {
     private static final int MAX_MESSAGES = 100;
 
     private double lastTime = 0;
-    private final LinkedList<ChatMessageOut> messageCache = new LinkedList<ChatMessageOut>();
+    private final LinkedList<ChatMessageOut> messageCache = new LinkedList<>();
     private static ChatPollWebUtility chatPollWebUtility = null;
-    private final Set<ChatMessageReceiver> chatReceivers = Collections.newSetFromMap(new HashMap<ChatMessageReceiver, Boolean>());
+    private final Set<ChatMessageReceiver> chatReceivers = new HashSet<>();
 
     public void resetChatMessages() {
         lastTime = 0;

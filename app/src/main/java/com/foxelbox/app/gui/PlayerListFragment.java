@@ -35,7 +35,7 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     }
 
     private void refreshPlayerList() {
-        new WebUtility<PlayerListResponse>(getActivity()) {
+        new WebUtility<PlayerListResponse>(getActionBarActivity()) {
             @Override
             public PlayerListResponse createResponse() {
                 return new PlayerListResponse();

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.Toast;
 import com.foxelbox.app.json.BaseResponse;
@@ -24,11 +25,11 @@ public abstract class WebUtility<RT extends BaseResponse> {
     public static final String API_ENDPOINT = "https://api.foxelbox.com/v1/";
 
     public static class SimpleWebUtility extends WebUtility<BaseResponse> {
-        public SimpleWebUtility(Activity activity) {
+        public SimpleWebUtility(ActionBarActivity activity) {
             super(activity);
         }
 
-        public SimpleWebUtility(Activity activity, Context context) {
+        public SimpleWebUtility(ActionBarActivity activity, Context context) {
             super(activity, context);
         }
 
@@ -50,7 +51,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     protected final Context context;
-    protected final Activity activity;
+    protected final ActionBarActivity activity;
 
     private static volatile int activityCounter = 0;
     public static boolean isRunning() {
@@ -102,12 +103,12 @@ public abstract class WebUtility<RT extends BaseResponse> {
         return result.toString();
     }
 
-    public WebUtility(Activity activity) {
+    public WebUtility(ActionBarActivity activity) {
         this.context = activity.getApplicationContext();
         this.activity = activity;
     }
 
-    public WebUtility(Activity activity, Context context) {
+    public WebUtility(ActionBarActivity activity, Context context) {
         this.context = context;
         this.activity = activity;
     }
@@ -193,7 +194,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
             return;
 
         if (result.success) {
-            if(result.session_id != null && !result.session_id.isEmpty())
+            if(result.session_id != null && !result.session_id.equals(""))
                 LoginUtility.session_id = result.session_id;
             onSuccess(result);
         } else {
@@ -201,7 +202,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
                 new LoginUtility(this, activity, context).login();
                 return;
             }
-            onErrorInternal((result.message != null && !result.message.isEmpty()) ? result.message : "Unknown error", new Gson().toJson(result));
+            onErrorInternal((result.message != null && !result.message.equals("")) ? result.message : "Unknown error", new Gson().toJson(result));
         }
     }
 

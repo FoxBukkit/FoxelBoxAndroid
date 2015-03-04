@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.*;
 import android.view.*;
@@ -109,7 +110,7 @@ public class MainActivity extends ActionBarActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_global, menu);
         MenuItem loaderSpinner = menu.findItem(R.id.menuLoaderSpinner);
-        loaderSpinner.setActionView(R.layout.actionbar_immediate_progress);
+        MenuItemCompat.setActionView(loaderSpinner, R.layout.actionbar_immediate_progress);
         loaderSpinner.setVisible(WebUtility.isRunning());
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             restoreActionBar();
@@ -250,6 +251,10 @@ public class MainActivity extends ActionBarActivity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+
+        protected ActionBarActivity getActionBarActivity() {
+            return (ActionBarActivity)getActivity();
         }
     }
 }

@@ -99,7 +99,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");
-        new WebUtility.SimpleWebUtility(getActivity(), view.getContext()) {
+        new WebUtility.SimpleWebUtility(getActionBarActivity(), view.getContext()) {
             @Override
             protected void onSuccess(BaseResponse result) {
 
