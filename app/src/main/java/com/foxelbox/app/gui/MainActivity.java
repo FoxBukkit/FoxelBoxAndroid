@@ -85,15 +85,19 @@ public class MainActivity extends ActionBarActivity
             @Override
             protected void onSuccess(BaseResponse result) {
                 super.onSuccess(result);
-                loginDialog.dismiss();
-                loginDialog = null;
+                if(loginDialog != null) {
+                    loginDialog.dismiss();
+                    loginDialog = null;
+                }
             }
 
             @Override
             protected void onError(String message) {
                 super.onError(message);
-                loginDialog.findViewById(R.id.login_button).setEnabled(true);
-                loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
+                if(loginDialog != null) {
+                    loginDialog.findViewById(R.id.login_button).setEnabled(true);
+                    loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
+                }
             }
         }.login();
     }
