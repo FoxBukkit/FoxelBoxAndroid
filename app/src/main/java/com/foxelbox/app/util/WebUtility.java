@@ -177,6 +177,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
             return tryDownloadURLInternal(url, data);
         } catch (HttpErrorException e) {
             RT errorObject = createResponse();
+            errorObject.__url = url;
             errorObject.success = false;
             errorObject.message = e.getMessage();
             return errorObject;
@@ -244,7 +245,9 @@ public abstract class WebUtility<RT extends BaseResponse> {
                 throw new HttpErrorException("Response code " + response);
             is = conn.getInputStream();
 
-            return new Gson().fromJson(new InputStreamReader(is), getResponseClass());
+            RT result = new Gson().fromJson(new InputStreamReader(is), getResponseClass());
+            result.__url = urlStr;
+            return result;
         } catch (Exception e) {
             throw new HttpErrorException(e.getMessage());
         } finally {
