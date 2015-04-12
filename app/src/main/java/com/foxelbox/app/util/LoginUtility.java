@@ -21,7 +21,7 @@ public class LoginUtility extends WebUtility<BaseResponse> {
     private final WebUtility runOnSuccess;
 
     public static boolean enabled = false;
-    protected static String session_id = null;
+    static String session_id = null;
     public static String username = null;
     public static String password = null;
 

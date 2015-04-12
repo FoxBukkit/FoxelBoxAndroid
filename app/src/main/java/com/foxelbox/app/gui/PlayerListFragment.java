@@ -74,11 +74,6 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         refreshPlayerList();

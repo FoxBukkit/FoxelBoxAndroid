@@ -1,7 +1,5 @@
 package com.foxelbox.app.data;
 
-import com.foxelbox.app.json.chat.UserInfo;
-
 import java.util.UUID;
 
 public class MCPlayer {
@@ -11,11 +9,6 @@ public class MCPlayer {
 
     public MCPlayer(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public MCPlayer(UserInfo userInfo) {
-        this.uuid = userInfo.uuid;
-        this.name = userInfo.name;
     }
 
     public UUID getUuid() {

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class WebUtility<RT extends BaseResponse> {
-    //public static final String API_ENDPOINT = "http://192.168.56.1/phpstorm/FoxelBoxAPI/public/v1/";
     public static final String API_ENDPOINT = "https://api.foxelbox.com/v1/";
 
     public static class SimpleWebUtility extends WebUtility<BaseResponse> {
@@ -75,7 +74,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     protected static String encodeData(boolean add_session_id, CharSequence... dataVararg) {
-        Map<CharSequence, CharSequence> data = new HashMap<CharSequence, CharSequence>();
+        Map<CharSequence, CharSequence> data = new HashMap<>();
         for(int i = 0; i < dataVararg.length; i += 2) {
             data.put(dataVararg[i], dataVararg[i + 1]);
         }
@@ -219,12 +218,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     public static void sendChatMessage(final ActionBarActivity activity, final View view, final CharSequence message) {
-        new WebUtility.SimpleWebUtility(activity, view.getContext()) {
-            @Override
-            protected void onSuccess(BaseResponse result) {
-
-            }
-        }.execute("message/send", WebUtility.encodeData("message", message));
+        new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("message/send", WebUtility.encodeData("message", message));
     }
 
     protected void onSuccess(RT result) { }

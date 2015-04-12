@@ -37,8 +37,8 @@ public class CategoricListArrayAdapter extends ArrayAdapter<CategoricListArrayAd
     }
 
     public interface ICategoricListItem {
-        public int getViewType();
-        public View getView(LayoutInflater inflater, View convertView);
+        int getViewType();
+        View getView(LayoutInflater inflater, View convertView);
     }
 
     public static class CategoricListHeader implements ICategoricListItem {

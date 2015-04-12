@@ -68,11 +68,11 @@ public class MainActivity extends ActionBarActivity
         if(LoginUtility.username != null && LoginUtility.password != null) {
             ((EditText) loginDialog.findViewById(R.id.login_username)).setText(LoginUtility.username);
             ((EditText) loginDialog.findViewById(R.id.login_password)).setText(LoginUtility.password);
-            doLogin(dialogView);
+            doLogin();
         }
     }
 
-    public void doLogin(final View view) {
+    private void doLogin() {
         loginDialog.findViewById(R.id.login_button).setEnabled(false);
         loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
 
@@ -123,12 +123,12 @@ public class MainActivity extends ActionBarActivity
         return true;
     }
 
-    public void restoreActionBar() {
+    private void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setSubtitle(mTitle);
     }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         Fragment fragment;
@@ -201,7 +201,7 @@ public class MainActivity extends ActionBarActivity
         replaceContentFragment(profileFragment, true);
     }
 
-    public void replaceContentFragment(Fragment fragment, boolean addToStack) {
+    private void replaceContentFragment(Fragment fragment, boolean addToStack) {
         if(addToStack) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fragment)
@@ -214,7 +214,7 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    public void onSectionAttached(int number) {
+    private void onSectionAttached(int number) {
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_chat);
@@ -245,20 +245,17 @@ public class MainActivity extends ActionBarActivity
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_main, container, false);
         }
 
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+            ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
         }
 
-        protected ActionBarActivity getActionBarActivity() {
+        ActionBarActivity getActionBarActivity() {
             return (ActionBarActivity)getActivity();
         }
     }

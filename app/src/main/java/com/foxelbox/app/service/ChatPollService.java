@@ -50,7 +50,7 @@ public class ChatPollService extends Service {
     }
 
     public interface ChatMessageReceiver {
-        public void chatMessagesReceived(Collection<ChatMessageOut> messages);
+        void chatMessagesReceived(Collection<ChatMessageOut> messages);
     }
 
     public class ChatBinder extends Binder {
@@ -59,7 +59,7 @@ public class ChatPollService extends Service {
                 if(sendExisting) {
                     final LinkedList<ChatMessageOut> myMessageCache;
                     synchronized (messageCache) {
-                        myMessageCache = new LinkedList<ChatMessageOut>(messageCache);
+                        myMessageCache = new LinkedList<>(messageCache);
                     }
                     receiver.chatMessagesReceived(myMessageCache);
                 }
@@ -122,7 +122,7 @@ public class ChatPollService extends Service {
             lastTime = result.time;
 
             synchronized (chatReceivers) {
-                final LinkedList<ChatMessageOut> myMessageCache = new LinkedList<ChatMessageOut>();
+                final LinkedList<ChatMessageOut> myMessageCache = new LinkedList<>();
 
                 synchronized (messageCache) {
                     for(ChatMessageOut message : result.messages) {
@@ -138,7 +138,7 @@ public class ChatPollService extends Service {
                 for (final ChatMessageReceiver chatMessageReceiver : chatReceivers) {
                     Thread t = new Thread() {
                         public void run() {
-                            chatMessageReceiver.chatMessagesReceived(new LinkedList<ChatMessageOut>(myMessageCache));
+                            chatMessageReceiver.chatMessagesReceived(new LinkedList<>(myMessageCache));
                         }
                     };
                     t.setDaemon(true);

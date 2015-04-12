@@ -97,7 +97,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         getActivity().unbindService(serviceConnection);
     }
 
-    public void sendChatMessage(View view) {
+    private void sendChatMessage(View view) {
         EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");

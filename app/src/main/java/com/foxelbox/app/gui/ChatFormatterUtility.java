@@ -23,10 +23,10 @@ public class ChatFormatterUtility {
     private static final char COLOR_CHAR = '\u00a7';
     private static final Pattern REMOVE_COLOR_CHAR = Pattern.compile("\u00a7.");
 
-    final static boolean[] isColorCode;
-    final static int[] colorCodeSpans;
-    final static Map<String, Integer> colorNameSpans;
-    final static Map<String, OnClickSpanFactory> onClickSpans;
+    private final static boolean[] isColorCode;
+    private final static int[] colorCodeSpans;
+    private final static Map<String, Integer> colorNameSpans;
+    private final static Map<String, OnClickSpanFactory> onClickSpans;
 
     interface OnClickSpanFactory {
         ClickableSpan newSpan(String parameter);
