@@ -17,7 +17,7 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
         private final MCPlayer player;
 
         private PlayerListItem(MCPlayer player) {
-            super(ChatFormatterUtility.formatString(player.getDisplayName()));
+            super(ChatFormatterUtility.formatString(player.getDisplayName(), false));
             this.player = player;
         }
 

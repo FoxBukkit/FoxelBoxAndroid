@@ -33,14 +33,16 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
-                    final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>)chatMessageList.getAdapter();
-                    for(ChatMessageOut message : messages) {
-                        if(message.type.equals("text"))
+                    final ListView chatMessageList = (ListView) getView().findViewById(R.id.listChatMessages);
+                    final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>) chatMessageList.getAdapter();
+                    for (ChatMessageOut message : messages) {
+                        if (message.type.equals("text")) {
                             chatMessageListAdapter.add(message.contents.getFormatted());
+                        }
                     }
-                    while(chatMessageListAdapter.getCount() > MAX_MESSAGES)
+                    while (chatMessageListAdapter.getCount() > MAX_MESSAGES) {
                         chatMessageListAdapter.remove(chatMessageListAdapter.getItem(0));
+                    }
                 }
             });
         }
@@ -72,7 +74,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             }
         });
 
-        ArrayAdapter<Spannable> items = new ArrayAdapter<Spannable>(fragmentView.getContext(), R.layout.list_item_chat);
+        ArrayAdapter<Spannable> items = new ArrayAdapter<>(fragmentView.getContext(), R.layout.list_item_chat);
         ((ListView)fragmentView.findViewById(R.id.listChatMessages)).setAdapter(items);
 
         return fragmentView;
@@ -90,8 +92,9 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(chatBinder != null)
+        if(chatBinder != null) {
             chatBinder.removeReceiver(chatMessageReceiver);
+        }
         getActivity().unbindService(serviceConnection);
     }
 
@@ -99,11 +102,6 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");
-        new WebUtility.SimpleWebUtility(getActionBarActivity(), view.getContext()) {
-            @Override
-            protected void onSuccess(BaseResponse result) {
-
-            }
-        }.execute("message/send", WebUtility.encodeData("message", message));
+        WebUtility.sendChatMessage(getActionBarActivity(), view, message);
     }
 }

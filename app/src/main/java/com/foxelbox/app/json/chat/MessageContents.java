@@ -30,10 +30,16 @@ public class MessageContents {
 
     private transient Spannable formatted = null;
     public Spannable getFormatted() {
-        if(plain == null)
+        if(plain == null && xml == null) {
             return null;
-        if(formatted == null)
-            formatted = ChatFormatterUtility.formatString(plain);
+        }
+        if(formatted == null) {
+            if(xml == null) {
+                formatted = ChatFormatterUtility.formatString(plain, false);
+            } else {
+                formatted = ChatFormatterUtility.formatString(xml, true);
+            }
+        }
         return formatted;
     }
 }

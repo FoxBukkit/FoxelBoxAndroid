@@ -53,7 +53,7 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
                 super.onSuccess(result);
                 items.clear();
                 for(ProfileField field : result.fields)
-                    items.add(ChatFormatterUtility.formatString(field.title + ": " + field.value));
+                    items.add(ChatFormatterUtility.formatString(field.title + ": " + field.value, false));
             }
         }.execute("player/info", WebUtility.encodeData("uuid", myUUID));
     }

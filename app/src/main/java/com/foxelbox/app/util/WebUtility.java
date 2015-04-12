@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import com.foxelbox.app.json.BaseResponse;
 import com.google.gson.Gson;
@@ -215,6 +216,15 @@ public abstract class WebUtility<RT extends BaseResponse> {
         Log.w("foxelbox_api", message, new Throwable());
         if(context != null)
             Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void sendChatMessage(final ActionBarActivity activity, final View view, final CharSequence message) {
+        new WebUtility.SimpleWebUtility(activity, view.getContext()) {
+            @Override
+            protected void onSuccess(BaseResponse result) {
+
+            }
+        }.execute("message/send", WebUtility.encodeData("message", message));
     }
 
     protected void onSuccess(RT result) { }
