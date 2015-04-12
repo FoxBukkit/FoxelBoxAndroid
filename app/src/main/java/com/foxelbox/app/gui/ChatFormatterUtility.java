@@ -1,27 +1,21 @@
 package com.foxelbox.app.gui;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.text.*;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.TextView;
 import com.foxelbox.app.R;
 import com.foxelbox.app.util.WebUtility;
 import org.xml.sax.XMLReader;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

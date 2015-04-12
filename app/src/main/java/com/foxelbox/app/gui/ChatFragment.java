@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.foxelbox.app.R;
-import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.json.chat.ChatMessageOut;
 import com.foxelbox.app.service.ChatPollService;
 import com.foxelbox.app.util.WebUtility;
