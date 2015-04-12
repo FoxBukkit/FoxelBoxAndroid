@@ -68,11 +68,11 @@ public class MainActivity extends ActionBarActivity
         if(LoginUtility.username != null && LoginUtility.password != null) {
             ((EditText) loginDialog.findViewById(R.id.login_username)).setText(LoginUtility.username);
             ((EditText) loginDialog.findViewById(R.id.login_password)).setText(LoginUtility.password);
-            doLogin();
+            doLogin(null);
         }
     }
 
-    private void doLogin() {
+    public void doLogin(View view) {
         loginDialog.findViewById(R.id.login_button).setEnabled(false);
         loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
 
