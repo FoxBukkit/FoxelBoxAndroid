@@ -21,8 +21,7 @@ public class ListClickableTextView extends TextView {
 
             int action = event.getAction();
 
-            if (action == MotionEvent.ACTION_UP
-                    || action == MotionEvent.ACTION_DOWN) {
+            if (action == MotionEvent.ACTION_UP) {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
 
@@ -36,17 +35,10 @@ public class ListClickableTextView extends TextView {
                 int line = layout.getLineForVertical(y);
                 int off = layout.getOffsetForHorizontal(line, x);
 
-                ClickableSpan[] link = buffer.getSpans(off, off,
-                        ClickableSpan.class);
+                ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
 
                 if (link.length != 0) {
-                    if (action == MotionEvent.ACTION_UP) {
-                        link[0].onClick(this);
-                    }/* else if (action == MotionEvent.ACTION_DOWN) {
-                        Selection.setSelection(buffer,
-                                buffer.getSpanStart(link[0]),
-                                buffer.getSpanEnd(link[0]));
-                    }*/
+                    link[0].onClick(this);
                     return true;
                 }
             }
