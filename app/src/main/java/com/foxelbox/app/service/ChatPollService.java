@@ -126,7 +126,7 @@ public class ChatPollService extends Service {
 
                 synchronized (messageCache) {
                     for(ChatMessageOut message : result.messages) {
-                        message.contents.getFormatted();
+                        message.getFormattedContents();
                         messageCache.add(message);
                         myMessageCache.add(message);
                     }

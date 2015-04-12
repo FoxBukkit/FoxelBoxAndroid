@@ -16,14 +16,17 @@
  */
 package com.foxelbox.app.json.chat;
 
+import android.text.Spannable;
+import com.foxelbox.app.gui.ChatFormatterUtility;
+
 import java.util.UUID;
 
 public class ChatMessageOut {
-    public ChatMessageOut(String server, UserInfo from, String plain, String xml) {
+    public ChatMessageOut(String server, UserInfo from, String xml) {
         this.server = server;
         this.from = from;
         this.to = new MessageTarget("all", null);
-        this.contents = new MessageContents(plain, xml);
+        this.contents = xml;
         this.context = UUID.randomUUID();
     }
 
@@ -39,5 +42,16 @@ public class ChatMessageOut {
 
     public final int importance = 0;
 
-    public final MessageContents contents;
+    public final String contents;
+
+    private transient Spannable formatted = null;
+    public Spannable getFormattedContents() {
+        if(contents == null) {
+            return null;
+        }
+        if(formatted == null) {
+            formatted = ChatFormatterUtility.formatString(contents, true);
+        }
+        return formatted;
+    }
 }

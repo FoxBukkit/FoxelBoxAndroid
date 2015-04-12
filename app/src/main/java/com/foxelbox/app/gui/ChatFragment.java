@@ -37,7 +37,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                     final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>) chatMessageList.getAdapter();
                     for (ChatMessageOut message : messages) {
                         if (message.type.equals("text")) {
-                            chatMessageListAdapter.add(message.contents.getFormatted());
+                            chatMessageListAdapter.add(message.getFormattedContents());
                         }
                     }
                     while (chatMessageListAdapter.getCount() > MAX_MESSAGES) {
