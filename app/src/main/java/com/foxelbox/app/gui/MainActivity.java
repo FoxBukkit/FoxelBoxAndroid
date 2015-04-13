@@ -12,12 +12,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.EditText;
+import com.crashlytics.android.Crashlytics;
 import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
 import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.service.ChatPollService;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -37,6 +39,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)

@@ -8,3 +8,4 @@
 *.jks
 /build
 /app/manifest-merger-release-report.txt
+/app/fabric.properties
