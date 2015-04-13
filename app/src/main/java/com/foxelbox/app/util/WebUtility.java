@@ -131,15 +131,16 @@ public abstract class WebUtility<RT extends BaseResponse> {
             @Override
             public void run() {
                 final RT ret = doInBackground(url, data);
-                if(activity == null)
+                if(activity == null) {
                     onPostExecute(ret);
-                else
+                } else {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             onPostExecute(ret);
                         }
                     });
+                }
             }
         };
         t.setDaemon(true);

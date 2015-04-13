@@ -33,17 +33,20 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                 @Override
                 public void run() {
                     final View view = getView();
-                    if(view == null) {
+                    if (view == null) {
                         return;
                     }
                     final ListView chatMessageList = (ListView) view.findViewById(R.id.listChatMessages);
-                    if(chatMessageList == null) {
+                    if (chatMessageList == null) {
                         return;
                     }
                     final ArrayAdapter<Spanned> chatMessageListAdapter = (ArrayAdapter<Spanned>) chatMessageList.getAdapter();
                     for (ChatMessageOut message : messages) {
                         if (message.type.equals("text")) {
-                            chatMessageListAdapter.add(message.getFormattedContents());
+                            Spanned content = message.getFormattedContents();
+                            if (content != null) {
+                                chatMessageListAdapter.add(content);
+                            }
                         }
                     }
                     while (chatMessageListAdapter.getCount() > MAX_MESSAGES) {
