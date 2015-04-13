@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 public class ChatFormatterUtility {
     private static final char COLOR_CHAR = '\u00a7';
     private static final Pattern FIX_REDUNDANT_TAGS = Pattern.compile("<([a-z]+)[^>]*>(\\s*)</\\1>", Pattern.CASE_INSENSITIVE);
-    private static final Pattern REMOVE_COLOR_CHAR = Pattern.compile(COLOR_CHAR + ".");
 
     private static final Map<String, Integer> colorNameSpans;
     private static final Map<String, OnClickSpanFactory> onClickSpans;
@@ -345,14 +344,10 @@ public class ChatFormatterUtility {
     }
 
     public static Spanned formatString(String string, boolean parseXml) {
-        String noColorCode = REMOVE_COLOR_CHAR.matcher(string).replaceAll("");
-
         if(!parseXml) {
-            noColorCode = convertLegacyColors(XMLEscape(string));
+            string = convertLegacyColors(XMLEscape(string));
         }
 
-        Log.d("fbdd", noColorCode);
-
-        return Html.fromHtml("<root>" + noColorCode + "</root>", null, new MCHtmlTagHandler());
+        return Html.fromHtml("<root>" + string + "</root>", null, new MCHtmlTagHandler());
     }
 }
