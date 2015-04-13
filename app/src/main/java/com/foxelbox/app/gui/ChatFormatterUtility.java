@@ -74,22 +74,22 @@ public class ChatFormatterUtility {
         colorCodeSpans['e'] = Color.parseColor("#FEFE3F");
         colorCodeSpans['f'] = Color.parseColor("#FFFFFF");
 
-        colorNameSpans.put("black", colorCodeSpans['0']);
-        colorNameSpans.put("dark_blue", colorCodeSpans['1']);
-        colorNameSpans.put("dark_green", colorCodeSpans['2']);
-        colorNameSpans.put("dark_aqua", colorCodeSpans['3']);
-        colorNameSpans.put("dark_red", colorCodeSpans['4']);
-        colorNameSpans.put("dark_purple", colorCodeSpans['5']);
-        colorNameSpans.put("gold", colorCodeSpans['6']);
-        colorNameSpans.put("gray", colorCodeSpans['7']);
-        colorNameSpans.put("dark_gray", colorCodeSpans['8']);
-        colorNameSpans.put("blue", colorCodeSpans['9']);
-        colorNameSpans.put("green", colorCodeSpans['a']);
-        colorNameSpans.put("aqua", colorCodeSpans['b']);
-        colorNameSpans.put("red", colorCodeSpans['c']);
-        colorNameSpans.put("light_purple", colorCodeSpans['d']);
-        colorNameSpans.put("yellow", colorCodeSpans['e']);
-        colorNameSpans.put("white", colorCodeSpans['f']);
+        colorNameSpans.put("black", Color.parseColor("#000000"));
+        colorNameSpans.put("dark_blue", Color.parseColor("#0000BE"));
+        colorNameSpans.put("dark_green", Color.parseColor("#00BE00"));
+        colorNameSpans.put("dark_aqua", Color.parseColor("#00BEBE"));
+        colorNameSpans.put("dark_red", Color.parseColor("#BE0000"));
+        colorNameSpans.put("dark_purple", Color.parseColor("#BE00BE"));
+        colorNameSpans.put("gold", Color.parseColor("#D9A334"));
+        colorNameSpans.put("gray", Color.parseColor("#BEBEBE"));
+        colorNameSpans.put("dark_gray", Color.parseColor("#3F3F3F"));
+        colorNameSpans.put("blue", Color.parseColor("#3F3FFE"));
+        colorNameSpans.put("green", Color.parseColor("#3FFE3F"));
+        colorNameSpans.put("aqua", Color.parseColor("#3FFEFE"));
+        colorNameSpans.put("red", Color.parseColor("#FE3F3F"));
+        colorNameSpans.put("light_purple", Color.parseColor("#FE3FFE"));
+        colorNameSpans.put("yellow", Color.parseColor("#FEFE3F"));
+        colorNameSpans.put("white", Color.parseColor("#FFFFFF"));
 
         onClickSpans.put("suggest_command", new OnClickSpanFactory() {
             @Override
@@ -264,22 +264,14 @@ public class ChatFormatterUtility {
         }
     }
 
-    public static Spannable formatString(String string, boolean parseXml) {
+    public static Spanned formatString(String string, boolean parseXml) {
         String noColorCode = REMOVE_COLOR_CHAR.matcher(string).replaceAll("");
 
-        Spannable stringBuilder;
         if(parseXml) {
-            string = Html.fromHtml(string).toString();
-            Spanned xmlParsed = Html.fromHtml("<root>" + noColorCode + "</root>", null, new MCHtmlTagHandler());
-            stringBuilder = new SpannableString(xmlParsed);
-            noColorCode = xmlParsed.toString();
-
-            copySpans(xmlParsed, stringBuilder, ForegroundColorSpan.class);
-            copySpans(xmlParsed, stringBuilder, ClickableSpan.class);
-        } else {
-            stringBuilder = new SpannableString(noColorCode);
+            return Html.fromHtml("<root>" + noColorCode + "</root>", null, new MCHtmlTagHandler());
         }
 
+        Spannable stringBuilder = new SpannableString(noColorCode);
         string = string.toLowerCase();
 
         int offset = 0, lastPos, pos = -1;

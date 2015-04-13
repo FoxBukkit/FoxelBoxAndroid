@@ -1,6 +1,6 @@
 package com.foxelbox.app.json.chat;
 
-import android.text.Spannable;
+import android.text.Spanned;
 import com.foxelbox.app.gui.ChatFormatterUtility;
 
 import java.util.UUID;
@@ -28,8 +28,8 @@ public class ChatMessageOut {
 
     public final String contents;
 
-    private transient Spannable formatted = null;
-    public Spannable getFormattedContents() {
+    private transient Spanned formatted = null;
+    public Spanned getFormattedContents() {
         if(contents == null) {
             return null;
         }

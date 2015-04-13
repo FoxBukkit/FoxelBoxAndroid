@@ -1,7 +1,7 @@
 package com.foxelbox.app.gui;
 
 import android.content.Context;
-import android.text.Spannable;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,9 +71,9 @@ public class CategoricListArrayAdapter extends ArrayAdapter<CategoricListArrayAd
     }
 
     public static class CategoricListItem implements ICategoricListItem {
-        private final Spannable str1;
+        private final Spanned str1;
 
-        public CategoricListItem(Spannable text1) {
+        public CategoricListItem(Spanned text1) {
             this.str1 = text1;
         }
 

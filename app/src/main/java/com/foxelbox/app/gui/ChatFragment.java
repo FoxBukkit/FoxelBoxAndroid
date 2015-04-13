@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.Spannable;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +33,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
                 @Override
                 public void run() {
                     final ListView chatMessageList = (ListView) getView().findViewById(R.id.listChatMessages);
-                    final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>) chatMessageList.getAdapter();
+                    final ArrayAdapter<Spanned> chatMessageListAdapter = (ArrayAdapter<Spanned>) chatMessageList.getAdapter();
                     for (ChatMessageOut message : messages) {
                         if (message.type.equals("text")) {
                             chatMessageListAdapter.add(message.getFormattedContents());
@@ -73,7 +73,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             }
         });
 
-        ArrayAdapter<Spannable> items = new ArrayAdapter<>(fragmentView.getContext(), R.layout.list_item_chat);
+        ArrayAdapter<Spanned> items = new ArrayAdapter<>(fragmentView.getContext(), R.layout.list_item_chat);
         ((ListView)fragmentView.findViewById(R.id.listChatMessages)).setAdapter(items);
 
         return fragmentView;
@@ -83,7 +83,7 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     public void onResume() {
         super.onResume();
         final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
-        final ArrayAdapter<Spannable> chatMessageListAdapter = (ArrayAdapter<Spannable>)chatMessageList.getAdapter();
+        final ArrayAdapter<Spanned> chatMessageListAdapter = (ArrayAdapter<Spanned>)chatMessageList.getAdapter();
         chatMessageListAdapter.clear();
         getActivity().bindService(new Intent(getActivity(), ChatPollService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }

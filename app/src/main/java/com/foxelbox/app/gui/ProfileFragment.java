@@ -1,8 +1,8 @@
 package com.foxelbox.app.gui;
 
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.SpannedString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,7 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        final ArrayAdapter<Spannable> items = new ArrayAdapter<>(fragmentView.getContext(), android.R.layout.simple_list_item_1);
+        final ArrayAdapter<Spanned> items = new ArrayAdapter<>(fragmentView.getContext(), android.R.layout.simple_list_item_1);
         ((ListView)fragmentView.findViewById(R.id.profileFieldList)).setAdapter(items);
 
         return fragmentView;
@@ -29,8 +29,8 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
         super.onActivityCreated(savedInstanceState);
 
         View fragmentView = getView();
-        final ArrayAdapter<Spannable> items = (ArrayAdapter<Spannable>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
-        items.add(new SpannableString("Please wait. Loading..."));
+        final ArrayAdapter<Spanned> items = (ArrayAdapter<Spanned>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
+        items.add(new SpannedString("Please wait. Loading..."));
 
         String myUUID = "myself";
         Bundle arguments = getArguments();
