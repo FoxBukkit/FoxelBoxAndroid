@@ -32,7 +32,14 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    final ListView chatMessageList = (ListView) getView().findViewById(R.id.listChatMessages);
+                    final View view = getView();
+                    if(view == null) {
+                        return;
+                    }
+                    final ListView chatMessageList = (ListView) view.findViewById(R.id.listChatMessages);
+                    if(chatMessageList == null) {
+                        return;
+                    }
                     final ArrayAdapter<Spanned> chatMessageListAdapter = (ArrayAdapter<Spanned>) chatMessageList.getAdapter();
                     for (ChatMessageOut message : messages) {
                         if (message.type.equals("text")) {

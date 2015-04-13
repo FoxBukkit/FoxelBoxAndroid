@@ -14,65 +14,43 @@ import com.foxelbox.app.util.WebUtility;
 import org.xml.sax.XMLReader;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChatFormatterUtility {
     private static final char COLOR_CHAR = '\u00a7';
-    private static final Pattern REMOVE_COLOR_CHAR = Pattern.compile("\u00a7.");
+    private static final Pattern FIX_REDUNDANT_TAGS = Pattern.compile("<([a-z]+)[^>]*>(\\s*)</\\1>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REMOVE_COLOR_CHAR = Pattern.compile(COLOR_CHAR + ".");
 
-    private final static boolean[] isColorCode;
-    private final static int[] colorCodeSpans;
-    private final static Map<String, Integer> colorNameSpans;
-    private final static Map<String, OnClickSpanFactory> onClickSpans;
+    private static final Map<String, Integer> colorNameSpans;
+    private static final Map<String, OnClickSpanFactory> onClickSpans;
+    private static final Map<Character, String> colorNames = new HashMap<>();
 
     interface OnClickSpanFactory {
         ClickableSpan newSpan(String parameter);
     }
 
     static {
-        isColorCode = new boolean[256];
-        colorCodeSpans = new int[256];
         colorNameSpans = new HashMap<>();
         onClickSpans = new HashMap<>();
 
-        isColorCode['0'] = true;
-        isColorCode['1'] = true;
-        isColorCode['2'] = true;
-        isColorCode['3'] = true;
-        isColorCode['4'] = true;
-        isColorCode['5'] = true;
-        isColorCode['6'] = true;
-        isColorCode['7'] = true;
-        isColorCode['8'] = true;
-        isColorCode['9'] = true;
-
-        isColorCode['a'] = true;
-        isColorCode['b'] = true;
-        isColorCode['c'] = true;
-        isColorCode['d'] = true;
-        isColorCode['e'] = true;
-        isColorCode['f'] = true;
-
-        colorCodeSpans['0'] = Color.parseColor("#000000");
-        colorCodeSpans['1'] = Color.parseColor("#0000BE");
-        colorCodeSpans['2'] = Color.parseColor("#00BE00");
-        colorCodeSpans['3'] = Color.parseColor("#00BEBE");
-        colorCodeSpans['4'] = Color.parseColor("#BE0000");
-        colorCodeSpans['5'] = Color.parseColor("#BE00BE");
-        colorCodeSpans['6'] = Color.parseColor("#D9A334");
-        colorCodeSpans['7'] = Color.parseColor("#BEBEBE");
-        colorCodeSpans['8'] = Color.parseColor("#3F3F3F");
-        colorCodeSpans['9'] = Color.parseColor("#3F3FFE");
-
-        colorCodeSpans['a'] = Color.parseColor("#3FFE3F");
-        colorCodeSpans['b'] = Color.parseColor("#3FFEFE");
-        colorCodeSpans['c'] = Color.parseColor("#FE3F3F");
-        colorCodeSpans['d'] = Color.parseColor("#FE3FFE");
-        colorCodeSpans['e'] = Color.parseColor("#FEFE3F");
-        colorCodeSpans['f'] = Color.parseColor("#FFFFFF");
+        colorNames.put('0', "black");
+        colorNames.put('1', "dark_blue");
+        colorNames.put('2', "dark_green");
+        colorNames.put('3', "dark_aqua");
+        colorNames.put('4', "dark_red");
+        colorNames.put('5', "dark_purple");
+        colorNames.put('6', "gold");
+        colorNames.put('7', "gray");
+        colorNames.put('8', "dark_gray");
+        colorNames.put('9', "blue");
+        colorNames.put('a', "green");
+        colorNames.put('b', "aqua");
+        colorNames.put('c', "red");
+        colorNames.put('d', "light_purple");
+        colorNames.put('e', "yellow");
+        colorNames.put('f', "white");
 
         colorNameSpans.put("black", Color.parseColor("#000000"));
         colorNameSpans.put("dark_blue", Color.parseColor("#0000BE"));
@@ -108,8 +86,7 @@ public class ChatFormatterUtility {
 
                     @Override
                     public void updateDrawState(TextPaint ds) {
-                        super.updateDrawState(ds);
-                        ds.setUnderlineText(false);
+
                     }
                 };
             }
@@ -126,8 +103,7 @@ public class ChatFormatterUtility {
 
                     @Override
                     public void updateDrawState(TextPaint ds) {
-                        super.updateDrawState(ds);
-                        ds.setUnderlineText(false);
+
                     }
                 };
             }
@@ -230,7 +206,7 @@ public class ChatFormatterUtility {
 
                     final Matcher matcher = FUNCTION_PATTERN.matcher(onClick);
                     if (!matcher.matches()) {
-                        Log.w("foxelbox_xml", "Unknown chat function pattern");
+                        Log.w("foxelbox_xml", "Unknown chat function pattern:" + onClick);
                         return;
                     }
 
@@ -258,77 +234,125 @@ public class ChatFormatterUtility {
         }
     }
 
-    private static <T> void copySpans(Spanned source, Spannable dest, Class<T> type) {
-        for(T span : source.getSpans(0, source.length(), type)) {
-            dest.setSpan(span, source.getSpanStart(span), source.getSpanEnd(span), source.getSpanFlags(span));
+    public static String convertLegacyColors(String in) {
+        StringBuilder out = new StringBuilder("<color name=\"white\">");
+
+        int lastPos = 0; char currentColor = 'f';
+
+        Set<String> openTagsSet = new HashSet<>();
+        Stack<String> openTags = new Stack<>();
+        openTagsSet.add("color");
+        openTags.push("color");
+
+        while(true) {
+            int pos = in.indexOf(COLOR_CHAR, lastPos);
+            if(pos < 0) {
+                if(lastPos == 0) {
+                    return in;
+                }
+                break;
+            }
+            char newColor = in.charAt(pos + 1);
+
+            if(pos > 0) {
+                out.append(in.substring(lastPos, pos));
+            }
+
+            lastPos = pos + 2;
+
+            if((newColor >= '0' && newColor <= '9') || (newColor >= 'a' && newColor <= 'f') || newColor == 'r') {
+
+                boolean doesNotChangeColor = newColor == 'r' || currentColor == newColor;
+
+                while(!openTags.empty()) {
+                    String tag = openTags.pop();
+                    if(doesNotChangeColor && tag.equals("color")) {
+                        continue;
+                    }
+                    out.append("</");
+                    out.append(tag);
+                    out.append('>');
+                }
+                openTagsSet.clear();
+
+                openTagsSet.add("color");
+                openTags.push("color");
+
+                if(doesNotChangeColor) {
+                    continue;
+                }
+
+                out.append("<color name=\"");
+                out.append(colorNames.get(newColor));
+                out.append("\">");
+
+                currentColor = newColor;
+            } else {
+                switch (newColor) {
+                    case 'l':
+                        if(!openTagsSet.contains("b")) {
+                            openTags.push("b");
+                            openTagsSet.add("b");
+                            out.append("<b>");
+                        }
+                        break;
+                    case 'm':
+                        if(!openTagsSet.contains("s")) {
+                            openTags.push("s");
+                            openTagsSet.add("s");
+                            out.append("<s>");
+                        }
+                        break;
+                    case 'n':
+                        if(!openTagsSet.contains("u")) {
+                            openTags.push("u");
+                            openTagsSet.add("u");
+                            out.append("<u>");
+                        }
+                        break;
+                    case 'o':
+                        if(!openTagsSet.contains("i")) {
+                            openTags.push("i");
+                            openTagsSet.add("i");
+                            out.append("<i>");
+                        }
+                        break;
+                }
+            }
         }
+
+        if(lastPos < in.length()) {
+            out.append(in.substring(lastPos));
+        }
+        while(!openTags.empty()) {
+            String tag = openTags.pop();
+            out.append("</");
+            out.append(tag);
+            out.append('>');
+        }
+
+        return FIX_REDUNDANT_TAGS.matcher(out.toString()).replaceAll("$2");
+    }
+
+    public static String XMLEscape(String s) {
+        s = s.replace("&", "&amp;");
+        s = s.replace("\"", "&quot;");
+        s = s.replace("'", "&apos;");
+        s = s.replace("<", "&lt;");
+        s = s.replace(">", "&gt;");
+
+        return s;
     }
 
     public static Spanned formatString(String string, boolean parseXml) {
         String noColorCode = REMOVE_COLOR_CHAR.matcher(string).replaceAll("");
 
-        if(parseXml) {
-            return Html.fromHtml("<root>" + noColorCode + "</root>", null, new MCHtmlTagHandler());
+        if(!parseXml) {
+            noColorCode = convertLegacyColors(XMLEscape(string));
         }
 
-        Spannable stringBuilder = new SpannableString(noColorCode);
-        string = string.toLowerCase();
+        Log.d("fbdd", noColorCode);
 
-        int offset = 0, lastPos, pos = -1;
-        char currentColor = 'f', newCode = 'f';
-        while(true) {
-            lastPos = pos;
-            pos = string.indexOf(COLOR_CHAR, pos + 1);
-            if(pos >= 0) {
-                newCode = string.charAt(pos + 1);
-            }
-            if(lastPos >= 0) {
-                int startPos = lastPos - (offset - 2);
-                int endPos = pos - offset;
-                if(pos < 0) {
-                    endPos = noColorCode.length();
-                }
-                if(endPos != startPos) {
-                    endPos = stringBuilder.nextSpanTransition(startPos, endPos, ForegroundColorSpan.class);
-                    stringBuilder.setSpan(new ForegroundColorSpan(colorCodeSpans[currentColor]), startPos, endPos, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                }
-            }
-
-            if(pos < 0) {
-                break;
-            }
-
-            offset += 2;
-
-            if(isColorCode[newCode]) {
-                currentColor = newCode;
-            } else {
-                switch(newCode) {
-                    case 'l':
-                        //bold = true;
-                        //break;
-                    case 'm':
-                        //strikethrough = true;
-                        //break;
-                    case 'n':
-                        //underline = true;
-                        //break;
-                    case 'o':
-                        //italic = true;
-                        //break;
-                    case 'r':
-                        //bold = false;
-                        //underline = false;
-                        //strikethrough = false;
-                        //italic = false;
-                        break;
-                    default:
-                        Log.w("foxelbox_decoder", "Invalid color code: " + newCode);
-                        break;
-                }
-            }
-        }
-
-        return stringBuilder;
+        return Html.fromHtml("<root>" + noColorCode + "</root>", null, new MCHtmlTagHandler());
     }
 }

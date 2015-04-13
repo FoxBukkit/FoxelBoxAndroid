@@ -5,6 +5,7 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -21,7 +22,7 @@ public class ListClickableTextView extends TextView {
 
             int action = event.getAction();
 
-            if (action == MotionEvent.ACTION_UP) {
+            if (action == MotionEvent.ACTION_DOWN) {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
 
@@ -42,9 +43,7 @@ public class ListClickableTextView extends TextView {
                     return true;
                 }
             }
-
         }
-
         return false;
     }
 }
