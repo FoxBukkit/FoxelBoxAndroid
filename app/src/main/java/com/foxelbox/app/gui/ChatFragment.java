@@ -66,8 +66,9 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            if(chatBinder != null)
+            if (chatBinder != null) {
                 chatBinder.removeReceiver(chatMessageReceiver);
+            }
         }
     };
 
