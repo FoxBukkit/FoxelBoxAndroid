@@ -13,7 +13,9 @@ import com.foxelbox.app.R;
 import com.foxelbox.app.util.WebUtility;
 import org.xml.sax.XMLReader;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -112,7 +114,7 @@ public class ChatFormatterUtility {
     private static class MCHtmlTagHandler implements Html.TagHandler {
         private static Field elementField = null, attsField = null, dataField = null, lengthField = null;
 
-        private String exfiltrateAttribute(XMLReader reader, String attribute) {
+        private static String exfiltrateAttribute(XMLReader reader, String attribute) {
             try {
                 if(elementField == null) {
                     elementField = reader.getClass().getDeclaredField("theNewElement");
@@ -147,68 +149,50 @@ public class ChatFormatterUtility {
             return null;
         }
 
-        private class ColorMarker extends SpanMarker {
+        private static class ColorMarker extends TagMarker {
             public final int color;
-            ColorMarker(int color, String onClick) {
-                super(onClick);
-                this.color = color;
+            ColorMarker(XMLReader reader) {
+                super(reader);
+                String colorName = exfiltrateAttribute(reader, "name");
+                Integer _color = colorNameSpans.get(colorName);
+                if(_color == null) {
+                    _color = colorNameSpans.get("white");
+                }
+                this.color = _color;
+            }
+
+            @Override
+            void applyTo(Editable output, int where, int len) {
+                super.applyTo(output, where, len);
+
+                output.setSpan(new ForegroundColorSpan(color), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
 
-        private class SpanMarker {
+        private static class SpanMarker extends TagMarker {
+            public SpanMarker(XMLReader reader) {
+                super(reader);
+            }
+        }
+
+        private static class GenericTagMarker extends TagMarker {
+            public GenericTagMarker(XMLReader reader) {
+                super(reader);
+            }
+        }
+
+        private static abstract class TagMarker {
             public final String onClick;
-            SpanMarker(String onClick) {
-                this.onClick = onClick;
-            }
-        }
-
-        private static final Pattern FUNCTION_PATTERN = Pattern.compile("^([^(]+)\\('(.*)'\\)$");
-
-        @Override
-        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
-            final int len = output.length();
-            int where = -1;
-            SpanMarker obj = null;
-
-            if(tag.equalsIgnoreCase("color")) {
-                if(opening) {
-                    String onClick = exfiltrateAttribute(xmlReader, "onclick");
-                    String colorName = exfiltrateAttribute(xmlReader, "name");
-                    if(!colorNameSpans.containsKey(colorName)) {
-                        return;
-                    }
-                    int color = colorNameSpans.get(colorName);
-
-                    output.setSpan(new ColorMarker(color, onClick), len, len, Spannable.SPAN_MARK_MARK);
-                } else {
-                    ColorMarker cObj = getLast(output, ColorMarker.class);
-                    if(cObj == null) {
-                        return;
-                    }
-                    obj = cObj;
-
-                    int color = cObj.color;
-                    where = output.getSpanStart(obj);
-                    output.removeSpan(obj);
-
-                    output.setSpan(new ForegroundColorSpan(color), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            } else if(tag.equalsIgnoreCase("span")) {
-                if(opening) {
-                    String onClick = exfiltrateAttribute(xmlReader, "onclick");
-                    output.setSpan(new SpanMarker(onClick), len, len, Spannable.SPAN_MARK_MARK);
-                } else {
-                    obj = getLast(output, SpanMarker.class);
-                    if(obj == null) {
-                        return;
-                    }
-                    where = output.getSpanStart(obj);
-                    output.removeSpan(obj);
-                }
+            TagMarker(XMLReader reader) {
+                this.onClick = exfiltrateAttribute(reader, "onclick");
             }
 
-            if(!opening && where >= 0 && obj != null && obj.onClick != null) {
-                final String onClick = obj.onClick;
+            void applyTo(Editable output, int where, int len) {
+                output.removeSpan(this);
+
+                if(onClick == null) {
+                    return;
+                }
 
                 final Matcher matcher = FUNCTION_PATTERN.matcher(onClick);
                 if (!matcher.matches()) {
@@ -219,17 +203,68 @@ public class ChatFormatterUtility {
                 final String eventType = matcher.group(1).toLowerCase();
                 final String eventString = matcher.group(2);
 
-                if(!onClickSpans.containsKey(eventType)) {
+                OnClickSpanFactory factory = onClickSpans.get(eventType);
+                if(factory == null) {
                     Log.w("foxelbox_xml", "Unknown chat function: " + eventType);
                     return;
                 }
 
-                OnClickSpanFactory factory = onClickSpans.get(eventType);
                 output.setSpan(factory.newSpan(eventString), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
 
-        private <T> T getLast(Editable text, Class<T> kind) {
+        private static final Pattern FUNCTION_PATTERN = Pattern.compile("^([^(]+)\\('(.*)'\\)$");
+
+        private static final HashMap<String, Constructor<? extends TagMarker>> tagMarkerCtorMap;
+        private static final HashMap<String, Class<? extends TagMarker>> tagMarkerClassMap;
+        static {
+            tagMarkerCtorMap = new HashMap<>();
+            tagMarkerClassMap = new HashMap<>();
+            try {
+                tagMarkerClassMap.put("color", ColorMarker.class);
+                tagMarkerClassMap.put("span", SpanMarker.class);
+                tagMarkerCtorMap.put("color", ColorMarker.class.getDeclaredConstructor(XMLReader.class));
+                tagMarkerCtorMap.put("span", SpanMarker.class.getDeclaredConstructor(XMLReader.class));
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+            final int len = output.length();
+            tag = tag.toLowerCase();
+
+            if(opening) {
+                try {
+                    Constructor<? extends TagMarker> ctor = tagMarkerCtorMap.get(tag);
+                    TagMarker obj;
+                    if(ctor == null) {
+                        obj = new GenericTagMarker(xmlReader);
+                    } else {
+                        obj = ctor.newInstance(xmlReader);
+                    }
+                    output.setSpan(obj, len, len, Spanned.SPAN_MARK_MARK);
+                } catch (InvocationTargetException|IllegalAccessException|InstantiationException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                Class<? extends TagMarker> clazz = tagMarkerClassMap.get(tag);
+                if(clazz == null) {
+                    clazz = GenericTagMarker.class;
+                }
+                TagMarker obj = getLast(output, clazz);
+                if (obj == null) {
+                    return;
+                }
+
+                int where = output.getSpanStart(obj);
+
+                obj.applyTo(output, where, len);
+            }
+        }
+
+        <T> T getLast(Editable text, Class<T> kind) {
             T[] objs = text.getSpans(0, text.length(), kind);
             if(objs.length == 0) {
                 return null;
