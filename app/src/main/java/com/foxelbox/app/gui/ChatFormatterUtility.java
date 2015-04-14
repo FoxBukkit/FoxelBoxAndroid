@@ -151,7 +151,7 @@ public class ChatFormatterUtility {
 
         private static class ColorMarker extends TagMarker {
             public final int color;
-            ColorMarker(XMLReader reader) {
+            public ColorMarker(XMLReader reader) {
                 super(reader);
                 String colorName = exfiltrateAttribute(reader, "name");
                 Integer _color = colorNameSpans.get(colorName);
@@ -183,7 +183,7 @@ public class ChatFormatterUtility {
 
         private static abstract class TagMarker {
             public final String onClick;
-            TagMarker(XMLReader reader) {
+            public TagMarker(XMLReader reader) {
                 this.onClick = exfiltrateAttribute(reader, "onclick");
             }
 
@@ -223,8 +223,8 @@ public class ChatFormatterUtility {
             try {
                 tagMarkerClassMap.put("color", ColorMarker.class);
                 tagMarkerClassMap.put("span", SpanMarker.class);
-                tagMarkerCtorMap.put("color", ColorMarker.class.getDeclaredConstructor(XMLReader.class));
-                tagMarkerCtorMap.put("span", SpanMarker.class.getDeclaredConstructor(XMLReader.class));
+                tagMarkerCtorMap.put("color", ColorMarker.class.getConstructor(XMLReader.class));
+                tagMarkerCtorMap.put("span", SpanMarker.class.getConstructor(XMLReader.class));
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }

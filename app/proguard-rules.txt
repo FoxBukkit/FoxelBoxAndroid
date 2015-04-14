@@ -19,3 +19,7 @@
 -keepclassmembers class com.foxelbox.app.json.** {
     public *;
 }
+
+-keepclassmembers class com.foxelbox.app.gui.ChatFormatterUtility$* {
+    <init>(org.xml.sax.XMLReader);
+}
