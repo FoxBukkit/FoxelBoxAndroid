@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
+import java.util.regex.Pattern;
+
 public class ListClickableTextView extends TextView {
     public ListClickableTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -36,7 +38,7 @@ public class ListClickableTextView extends TextView {
                 int line = layout.getLineForVertical(y);
                 int off = layout.getOffsetForHorizontal(line, x);
 
-                ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+                ClickableSpan[] link = buffer.getSpans(off, off+1, ClickableSpan.class);
 
                 if (link.length != 0) {
                     link[0].onClick(this);

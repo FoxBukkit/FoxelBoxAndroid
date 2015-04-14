@@ -147,9 +147,10 @@ public class ChatFormatterUtility {
             return null;
         }
 
-        private class ColorMarker {
+        private class ColorMarker extends SpanMarker {
             public final int color;
-            ColorMarker(int color) {
+            ColorMarker(int color, String onClick) {
+                super(onClick);
                 this.color = color;
             }
         }
@@ -166,23 +167,28 @@ public class ChatFormatterUtility {
         @Override
         public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
             final int len = output.length();
+            int where = -1;
+            SpanMarker obj = null;
+
             if(tag.equalsIgnoreCase("color")) {
                 if(opening) {
+                    String onClick = exfiltrateAttribute(xmlReader, "onclick");
                     String colorName = exfiltrateAttribute(xmlReader, "name");
                     if(!colorNameSpans.containsKey(colorName)) {
                         return;
                     }
                     int color = colorNameSpans.get(colorName);
 
-                    output.setSpan(new ColorMarker(color), len, len, Spannable.SPAN_MARK_MARK);
+                    output.setSpan(new ColorMarker(color, onClick), len, len, Spannable.SPAN_MARK_MARK);
                 } else {
-                    ColorMarker obj = getLast(output, ColorMarker.class);
-                    if(obj == null) {
+                    ColorMarker cObj = getLast(output, ColorMarker.class);
+                    if(cObj == null) {
                         return;
                     }
+                    obj = cObj;
 
-                    int color = obj.color;
-                    int where = output.getSpanStart(obj);
+                    int color = cObj.color;
+                    where = output.getSpanStart(obj);
                     output.removeSpan(obj);
 
                     output.setSpan(new ForegroundColorSpan(color), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -192,34 +198,34 @@ public class ChatFormatterUtility {
                     String onClick = exfiltrateAttribute(xmlReader, "onclick");
                     output.setSpan(new SpanMarker(onClick), len, len, Spannable.SPAN_MARK_MARK);
                 } else {
-                    SpanMarker obj = getLast(output, SpanMarker.class);
+                    obj = getLast(output, SpanMarker.class);
                     if(obj == null) {
                         return;
                     }
-                    int where = output.getSpanStart(obj);
+                    where = output.getSpanStart(obj);
                     output.removeSpan(obj);
-                    String onClick = obj.onClick;
-                    if(onClick == null) {
-                        return;
-                    }
-
-                    final Matcher matcher = FUNCTION_PATTERN.matcher(onClick);
-                    if (!matcher.matches()) {
-                        Log.w("foxelbox_xml", "Unknown chat function pattern:" + onClick);
-                        return;
-                    }
-
-                    final String eventType = matcher.group(1).toLowerCase();
-                    final String eventString = matcher.group(2);
-
-                    if(!onClickSpans.containsKey(eventType)) {
-                        Log.w("foxelbox_xml", "Unknown chat function: " + eventType);
-                        return;
-                    }
-
-                    OnClickSpanFactory factory = onClickSpans.get(eventType);
-                    output.setSpan(factory.newSpan(eventString), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
+            }
+
+            if(!opening && where >= 0 && obj != null && obj.onClick != null) {
+                final String onClick = obj.onClick;
+
+                final Matcher matcher = FUNCTION_PATTERN.matcher(onClick);
+                if (!matcher.matches()) {
+                    Log.w("foxelbox_xml", "Unknown chat function pattern:" + onClick);
+                    return;
+                }
+
+                final String eventType = matcher.group(1).toLowerCase();
+                final String eventString = matcher.group(2);
+
+                if(!onClickSpans.containsKey(eventType)) {
+                    Log.w("foxelbox_xml", "Unknown chat function: " + eventType);
+                    return;
+                }
+
+                OnClickSpanFactory factory = onClickSpans.get(eventType);
+                output.setSpan(factory.newSpan(eventString), where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
 
