@@ -33,9 +33,11 @@ public class ChatMessageOut {
         if(contents == null) {
             return null;
         }
-        if(formatted == null) {
-            formatted = ChatFormatterUtility.formatString(contents, true);
+        synchronized (contents) {
+            if (formatted == null) {
+                formatted = ChatFormatterUtility.formatString(contents, true);
+            }
+            return formatted;
         }
-        return formatted;
     }
 }
