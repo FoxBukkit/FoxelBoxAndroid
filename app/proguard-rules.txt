@@ -20,6 +20,6 @@
     public *;
 }
 
--keepclassmembers class com.foxelbox.app.gui.ChatFormatterUtility$* {
-    <init>(org.xml.sax.XMLReader);
+-keepclassmembers class com.foxelbox.app.util.chat.MCHtmlTagHandler$* {
+    <init>(org.xml.sax.Attributes);
 }

@@ -12,6 +12,7 @@ import com.foxelbox.app.R;
 import com.foxelbox.app.json.player.profile.ProfileField;
 import com.foxelbox.app.json.player.profile.ProfileResponse;
 import com.foxelbox.app.util.WebUtility;
+import com.foxelbox.app.util.chat.ChatFormatterUtility;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
     @Override

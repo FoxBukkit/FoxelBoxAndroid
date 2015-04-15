@@ -1,7 +1,7 @@
 package com.foxelbox.app.json.chat;
 
 import android.text.Spanned;
-import com.foxelbox.app.gui.ChatFormatterUtility;
+import com.foxelbox.app.util.chat.ChatFormatterUtility;
 
 import java.util.UUID;
 

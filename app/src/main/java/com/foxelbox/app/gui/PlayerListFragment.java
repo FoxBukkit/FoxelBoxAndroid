@@ -11,6 +11,7 @@ import com.foxelbox.app.json.player.list.PlayerListPlayer;
 import com.foxelbox.app.json.player.list.PlayerListResponse;
 import com.foxelbox.app.json.player.list.PlayerListServer;
 import com.foxelbox.app.util.WebUtility;
+import com.foxelbox.app.util.chat.ChatFormatterUtility;
 
 public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     private class PlayerListItem extends CategoricListArrayAdapter.CategoricListItem {
