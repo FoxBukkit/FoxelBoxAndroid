@@ -29,15 +29,16 @@ public class ChatMessageOut {
     public final String contents;
 
     private transient Spanned formatted = null;
-    public Spanned getFormattedContents() {
+
+    public synchronized void formatContents() {
         if(contents == null) {
-            return null;
+            formatted = null;
+            return;
         }
-        synchronized (contents) {
-            if (formatted == null) {
-                formatted = ChatFormatterUtility.formatString(contents, true);
-            }
-            return formatted;
-        }
+        formatted = ChatFormatterUtility.formatString(contents, true);
+    }
+
+    public Spanned getFormattedContents() {
+        return formatted;
     }
 }

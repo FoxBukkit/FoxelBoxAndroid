@@ -87,8 +87,9 @@ public class ChatPollService extends Service {
         }
 
         public void execute() {
-            if(chatPollWebUtility != this)
+            if(chatPollWebUtility != this) {
                 return;
+            }
 
             if(!LoginUtility.hasSessionId()) {
                 doRun(true);
@@ -116,8 +117,9 @@ public class ChatPollService extends Service {
 
         @Override
         protected void onSuccess(ChatPollResponse result) {
-            if(chatPollWebUtility != this)
+            if(chatPollWebUtility != this) {
                 return;
+            }
 
             lastTime = result.time;
 
@@ -126,13 +128,14 @@ public class ChatPollService extends Service {
 
                 synchronized (messageCache) {
                     for(ChatMessageOut message : result.messages) {
-                        message.getFormattedContents();
+                        message.formatContents();
                         messageCache.add(message);
                         myMessageCache.add(message);
                     }
 
-                    while(messageCache.size() > MAX_MESSAGES)
+                    while(messageCache.size() > MAX_MESSAGES) {
                         messageCache.removeFirst();
+                    }
                 }
 
                 for (final ChatMessageReceiver chatMessageReceiver : chatReceivers) {
