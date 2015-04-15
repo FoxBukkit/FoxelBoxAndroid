@@ -10,6 +10,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.*;
 import android.widget.EditText;
 import com.crashlytics.android.Crashlytics;
@@ -176,12 +177,16 @@ public class MainActivity extends ActionBarActivity
                     }
 
                     private void onDone() {
-                        logoutDialog.dismiss();
-                        stopService(new Intent(MainActivity.this, ChatPollService.class));
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
+                        try {
+                            logoutDialog.dismiss();
+                            stopService(new Intent(MainActivity.this, ChatPollService.class));
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.w("foxelbox_exit", "Could not exit", e);
+                        }
                     }
                 }.logout();
                 return;
