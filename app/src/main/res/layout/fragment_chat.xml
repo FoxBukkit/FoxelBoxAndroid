@@ -16,7 +16,7 @@
         android:layout_alignParentRight="true">
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textChatMessage"
             android:layout_weight="5000"
@@ -28,8 +28,9 @@
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:text="@string/send_button"
+            android:minWidth="60dp"
             android:id="@+id/buttonSendChat"
             android:layout_weight="1"/>
 

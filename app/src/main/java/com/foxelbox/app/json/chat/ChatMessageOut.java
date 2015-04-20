@@ -6,7 +6,7 @@ import com.foxelbox.app.util.chat.ChatFormatterUtility;
 import java.util.UUID;
 
 public class ChatMessageOut {
-    public ChatMessageOut(String server, UserInfo from, String xml) {
+    private ChatMessageOut(String server, UserInfo from, String xml) {
         this.server = server;
         this.from = from;
         this.to = new MessageTarget("all", null);
