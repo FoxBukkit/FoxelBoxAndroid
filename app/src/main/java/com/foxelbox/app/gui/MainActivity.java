@@ -77,11 +77,16 @@ public class MainActivity extends ActionBarActivity
     }
 
     public void doLogin(View view) {
-        loginDialog.findViewById(R.id.login_button).setEnabled(false);
-        loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
+        final Dialog myLoginDialog = loginDialog;
+        if(myLoginDialog == null) {
+            return;
+        }
+        
+        myLoginDialog.findViewById(R.id.login_button).setEnabled(false);
+        myLoginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
 
-        LoginUtility.username = ((EditText) loginDialog.findViewById(R.id.login_username)).getText().toString();
-        LoginUtility.password = ((EditText) loginDialog.findViewById(R.id.login_password)).getText().toString();
+        LoginUtility.username = ((EditText)myLoginDialog.findViewById(R.id.login_username)).getText().toString();
+        LoginUtility.password = ((EditText)myLoginDialog.findViewById(R.id.login_password)).getText().toString();
         LoginUtility.saveCredentials(this);
 
         LoginUtility.enabled = true;
@@ -89,21 +94,27 @@ public class MainActivity extends ActionBarActivity
             @Override
             protected void onSuccess(BaseResponse result) {
                 super.onSuccess(result);
-                if(loginDialog != null) {
-                    loginDialog.dismiss();
+                try {
+                    myLoginDialog.dismiss();
                     loginDialog = null;
+                } catch (Exception e) {
+                    Log.w("foxelbox_login", "Error in onError", e);
                 }
             }
 
             @Override
             protected void onError(String message) {
                 super.onError(message);
-                if(loginDialog != null) {
-                    loginDialog.findViewById(R.id.login_button).setEnabled(true);
-                    loginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
+                try {
+                    myLoginDialog.findViewById(R.id.login_button).setEnabled(true);
+                    myLoginDialog.findViewById(R.id.login_progressbar).setVisibility(View.INVISIBLE);
+                } catch (Exception e) {
+                    Log.w("foxelbox_login", "Error in onError", e);
                 }
             }
-        }.login();
+        }.
+
+            login();
     }
 
     @Override
