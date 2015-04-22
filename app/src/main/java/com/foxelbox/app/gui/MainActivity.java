@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity
         if(myLoginDialog == null) {
             return;
         }
-        
+
         myLoginDialog.findViewById(R.id.login_button).setEnabled(false);
         myLoginDialog.findViewById(R.id.login_progressbar).setVisibility(View.VISIBLE);
 
@@ -96,10 +96,10 @@ public class MainActivity extends ActionBarActivity
                 super.onSuccess(result);
                 try {
                     myLoginDialog.dismiss();
-                    loginDialog = null;
                 } catch (Exception e) {
                     Log.w("foxelbox_login", "Error in onError", e);
                 }
+                loginDialog = null;
             }
 
             @Override
@@ -114,7 +114,7 @@ public class MainActivity extends ActionBarActivity
             }
         }.
 
-            login();
+                login();
     }
 
     @Override
