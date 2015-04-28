@@ -93,7 +93,11 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     @Override
     public void onResume() {
         super.onResume();
-        final ListView chatMessageList = (ListView)getView().findViewById(R.id.listChatMessages);
+        final View view = getView();
+        if(view == null) {
+            return;
+        }
+        final ListView chatMessageList = (ListView)view.findViewById(R.id.listChatMessages);
         final ArrayAdapter<Spanned> chatMessageListAdapter = (ArrayAdapter<Spanned>)chatMessageList.getAdapter();
         chatMessageListAdapter.clear();
         getActivity().bindService(new Intent(getActivity(), ChatPollService.class), serviceConnection, Context.BIND_AUTO_CREATE);

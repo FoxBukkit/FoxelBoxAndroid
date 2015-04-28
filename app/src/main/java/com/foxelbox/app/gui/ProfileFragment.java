@@ -29,7 +29,10 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        View fragmentView = getView();
+        final View fragmentView = getView();
+        if(fragmentView == null) {
+            return;
+        }
         final ArrayAdapter<Spanned> items = (ArrayAdapter<Spanned>)((ListView)fragmentView.findViewById(R.id.profileFieldList)).getAdapter();
         items.add(new SpannedString("Please wait. Loading..."));
 

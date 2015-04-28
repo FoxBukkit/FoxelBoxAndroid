@@ -49,7 +49,11 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
 
             @Override
             protected void onSuccess(PlayerListResponse result) {
-                final CategoricListArrayAdapter items = (CategoricListArrayAdapter)((ListView)getView().findViewById(R.id.playerListView)).getAdapter();
+                final View view = getView();
+                if(view == null) {
+                    return;
+                }
+                final CategoricListArrayAdapter items = (CategoricListArrayAdapter)((ListView)view.findViewById(R.id.playerListView)).getAdapter();
                 items.clear();
                 for(PlayerListServer server : result.list) {
                     items.add(new CategoricListArrayAdapter.CategoricListHeader(server.server));
