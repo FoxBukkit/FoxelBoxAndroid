@@ -8,5 +8,5 @@ public class BaseResponse {
     public String message = null;
     public boolean retry = false;
     public boolean success = false;
-    public String session_id = null;
+    public String sessionId = null;
 }

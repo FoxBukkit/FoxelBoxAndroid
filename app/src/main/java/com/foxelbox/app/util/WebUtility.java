@@ -123,7 +123,7 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     public void execute(final String url, final String data, final boolean addSessionId) {
-        final String sessionId = addSessionId ? LoginUtility.session_id : null;
+        final String sessionId = addSessionId ? LoginUtility.sessionId : null;
         lastURL = url;
         lastData = data;
         lastAddSessionId = addSessionId;
@@ -196,8 +196,8 @@ public abstract class WebUtility<RT extends BaseResponse> {
             return;
 
         if (result.success) {
-            if(result.session_id != null && !result.session_id.equals(""))
-                LoginUtility.session_id = result.session_id;
+            if(result.sessionId != null && !result.sessionId.equals(""))
+                LoginUtility.sessionId = result.sessionId;
             onSuccess(result);
         } else {
             if(result.retry && LoginUtility.enabled) {
