@@ -70,24 +70,14 @@ public abstract class WebUtility<RT extends BaseResponse> {
     public abstract Class<RT> getResponseClass();
 
     public static String encodeData(CharSequence... dataVararg) {
-        return encodeData(true, dataVararg);
-    }
-
-    protected static String encodeData(boolean add_session_id, CharSequence... dataVararg) {
         Map<CharSequence, CharSequence> data = new HashMap<>();
         for(int i = 0; i < dataVararg.length; i += 2) {
             data.put(dataVararg[i], dataVararg[i + 1]);
         }
-        return encodeData(data, add_session_id);
+        return encodeData(data);
     }
 
     public static String encodeData(Map<CharSequence, CharSequence> data) {
-        return encodeData(data, true);
-    }
-
-    protected static String encodeData(Map<CharSequence, CharSequence> data, boolean add_session_id) {
-        if(add_session_id)
-            data.put("session_id", LoginUtility.session_id);
         StringBuilder result = new StringBuilder();
         boolean notFirst = false;
         for(Map.Entry<CharSequence, CharSequence> entries : data.entrySet()) {
@@ -114,23 +104,34 @@ public abstract class WebUtility<RT extends BaseResponse> {
 
     private String lastURL;
     private String lastData;
+    private boolean lastAddSessionId;
 
     public void retry() {
-        execute(lastURL, lastData);
+        execute(lastURL, lastData, lastAddSessionId);
     }
 
     public boolean isLongPoll() {
         return false;
     }
 
+    public void execute(final String url) {
+        execute(url, null);
+    }
+
     public void execute(final String url, final String data) {
+        execute(url, data, true);
+    }
+
+    public void execute(final String url, final String data, final boolean addSessionId) {
+        final String sessionId = addSessionId ? LoginUtility.session_id : null;
         lastURL = url;
         lastData = data;
+        lastAddSessionId = addSessionId;
         onPreExecute();
         Thread t = new Thread() {
             @Override
             public void run() {
-                final RT ret = doInBackground(url, data);
+                final RT ret = doInBackground(url, data, sessionId);
                 if(activity == null) {
                     onPostExecute(ret);
                 } else {
@@ -173,9 +174,9 @@ public abstract class WebUtility<RT extends BaseResponse> {
         return networkInfo != null && networkInfo.isConnected();
     }
 
-    protected final RT doInBackground(String url, String data) {
+    protected final RT doInBackground(String url, String data, String sessionId) {
         try {
-            return tryDownloadURLInternal(url, data);
+            return tryDownloadURLInternal(url, data, sessionId);
         } catch (HttpErrorException e) {
             RT errorObject = createResponse();
             errorObject.__url = url;
@@ -219,12 +220,12 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     public static void sendChatMessage(final ActionBarActivity activity, final View view, final CharSequence message) {
-        new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("message/send", WebUtility.encodeData("message", message));
+        new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("message/send", WebUtility.encodeData("message", message), true);
     }
 
     protected void onSuccess(RT result) { }
 
-    private RT tryDownloadURLInternal(String urlStr, String data)  throws HttpErrorException {
+    private RT tryDownloadURLInternal(String urlStr, String data, String sessionId)  throws HttpErrorException {
         InputStream is = null;
 
         try {
@@ -233,6 +234,9 @@ public abstract class WebUtility<RT extends BaseResponse> {
             conn.setReadTimeout(isLongPoll() ? 60000 : 5000 /* milliseconds */);
             conn.setConnectTimeout(5000 /* milliseconds */);
             conn.setDoInput(true);
+            if(sessionId != null) {
+                conn.setRequestProperty("Authorization", sessionId);
+            }
             if(data != null) {
                 if(isLongPoll())
                     data += "&longpoll=true";

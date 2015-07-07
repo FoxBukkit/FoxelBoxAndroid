@@ -50,12 +50,12 @@ public class LoginUtility extends WebUtility<BaseResponse> {
     public void login() {
         if(!enabled)
             return;
-        execute("login/auth", encodeData(false, "username", username, "password", password));
+        execute("login/auth", encodeData("username", username, "password", password), false);
     }
 
     public void logout() {
         enabled = false;
-        execute("login/logout", encodeData(true));
+        execute("login/logout");
         session_id = null;
     }
 

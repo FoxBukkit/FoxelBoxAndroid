@@ -65,7 +65,7 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
                     }
                 }
             }
-        }.execute("player/list", WebUtility.encodeData());
+        }.execute("player/list");
     }
 
     @Override
