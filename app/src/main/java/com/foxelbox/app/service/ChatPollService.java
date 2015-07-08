@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import com.foxelbox.app.json.BaseResponse;
-import com.foxelbox.app.json.ChatPollData;
 import com.foxelbox.app.json.chat.ChatMessageOut;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
@@ -19,13 +18,13 @@ import java.util.Set;
 public class ChatPollService extends Service {
     private static final int MAX_MESSAGES = 100;
 
-    private double lastTime = 0;
+    private long maxID = -1L;
     private final LinkedList<ChatMessageOut> messageCache = new LinkedList<>();
     private static ChatPollWebUtility chatPollWebUtility = null;
     private final Set<ChatMessageReceiver> chatReceivers = new HashSet<>();
 
     public void resetChatMessages() {
-        lastTime = 0;
+        maxID = 0;
         synchronized (messageCache) {
             messageCache.clear();
         }
@@ -81,7 +80,7 @@ public class ChatPollService extends Service {
         return new ChatBinder();
     }
 
-    private class ChatPollWebUtility extends WebUtility<ChatPollData> {
+    private class ChatPollWebUtility extends WebUtility<ChatMessageOut[]> {
         private boolean inProgress = false;
 
         private ChatPollWebUtility() {
@@ -99,12 +98,12 @@ public class ChatPollService extends Service {
             }
 
             inProgress = true;
-            execute("GET", "message", WebUtility.encodeData("since", "" + lastTime));
+            execute("GET", "message", WebUtility.encodeData("since", "" + maxID));
         }
 
         @Override
-        protected TypeToken<BaseResponse<ChatPollData>> getTypeToken() {
-            return new TypeToken<BaseResponse<ChatPollData>>(){};
+        protected TypeToken<BaseResponse<ChatMessageOut[]>> getTypeToken() {
+            return new TypeToken<BaseResponse<ChatMessageOut[]>>(){};
         }
 
         @Override
@@ -113,21 +112,22 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        protected void onSuccess(ChatPollData result) {
+        protected void onSuccess(ChatMessageOut[] result) {
             if(chatPollWebUtility != this) {
                 return;
             }
-
-            lastTime = result.time;
 
             synchronized (chatReceivers) {
                 final LinkedList<ChatMessageOut> myMessageCache = new LinkedList<>();
 
                 synchronized (messageCache) {
-                    for(ChatMessageOut message : result.messages) {
+                    for(ChatMessageOut message : result) {
                         message.formatContents();
                         messageCache.add(message);
                         myMessageCache.add(message);
+                        if(message.id != null && message.id > maxID) {
+                            maxID = message.id;
+                        }
                     }
 
                     while(messageCache.size() > MAX_MESSAGES) {
@@ -151,8 +151,9 @@ public class ChatPollService extends Service {
         }
 
         private void doRun(final boolean doSleep) {
-            if(chatPollWebUtility != this || inProgress)
+            if(chatPollWebUtility != this || inProgress) {
                 return;
+            }
             Thread t = new Thread() {
                 @Override
                 public void run() {

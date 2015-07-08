@@ -18,13 +18,14 @@ public class ChatMessageOut {
     public final UserInfo from;
     public final MessageTarget to;
 
-    public final long timestamp = System.currentTimeMillis() / 1000;
+    public final Long timestamp = System.currentTimeMillis() / 1000;
+    public final Long id = -1L;
 
     public final UUID context;
-    public final boolean finalize_context = false;
+    public final Boolean finalize_context = false;
     public final String type = "text";
 
-    public final int importance = 0;
+    public final Integer importance = 0;
 
     public final String contents;
 
