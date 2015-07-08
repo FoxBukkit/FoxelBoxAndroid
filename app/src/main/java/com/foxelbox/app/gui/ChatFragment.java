@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,11 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
     private final ChatPollService.ChatMessageReceiver chatMessageReceiver = new ChatPollService.ChatMessageReceiver() {
         @Override
         public void chatMessagesReceived(final Collection<ChatMessageOut> messages) {
-            getActivity().runOnUiThread(new Runnable() {
+            final FragmentActivity activity = getActivity();
+            if(activity == null) {
+                return;
+            }
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     final View view = getView();
