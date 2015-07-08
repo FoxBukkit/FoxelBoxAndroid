@@ -6,18 +6,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.player.login.LoginResponseData;
+import com.google.gson.reflect.TypeToken;
 
-public class LoginUtility extends WebUtility<BaseResponse> {
-    @Override
-    public BaseResponse createResponse() {
-        return new BaseResponse();
-    }
-
-    @Override
-    public Class<BaseResponse> getResponseClass() {
-        return BaseResponse.class;
-    }
-
+public class LoginUtility extends WebUtility<LoginResponseData> {
     private final WebUtility runOnSuccess;
 
     public static boolean enabled = false;
@@ -31,6 +23,11 @@ public class LoginUtility extends WebUtility<BaseResponse> {
 
     private static final String PREF_USERNAME = "foxelbox_username";
     private static final String PREF_PASSWORD = "foxelbox_password";
+
+    @Override
+    protected TypeToken<BaseResponse<LoginResponseData>> getTypeToken() {
+        return new TypeToken<BaseResponse<LoginResponseData>>(){};
+    }
 
     public static void loadCredentials(Activity activity) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -50,18 +47,13 @@ public class LoginUtility extends WebUtility<BaseResponse> {
     public void login() {
         if(!enabled)
             return;
-        execute("login/auth", encodeData("username", username, "password", password), false);
-    }
-
-    public void logout() {
-        enabled = false;
-        execute("login/logout");
-        sessionId = null;
+        execute("POST", "login", encodeData("username", username, "password", password), false);
     }
 
     @Override
-    protected void onSuccess(BaseResponse result) {
+    protected void onSuccess(LoginResponseData result) {
         super.onSuccess(result);
+        sessionId = result.sessionId;
         if(runOnSuccess != null)
             runOnSuccess.retry();
     }

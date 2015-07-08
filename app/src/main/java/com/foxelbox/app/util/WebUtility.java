@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 import com.foxelbox.app.json.BaseResponse;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,10 +21,10 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class WebUtility<RT extends BaseResponse> {
-    public static final String API_ENDPOINT = "https://api.foxelbox.com/v1/";
+public abstract class WebUtility<RT> {
+    public static final String API_ENDPOINT = "https://api.foxelbox.com/v2/";
 
-    public static class SimpleWebUtility extends WebUtility<BaseResponse> {
+    public static class SimpleWebUtility extends WebUtility<String> {
         public SimpleWebUtility(ActionBarActivity activity) {
             super(activity);
         }
@@ -33,19 +34,16 @@ public abstract class WebUtility<RT extends BaseResponse> {
         }
 
         @Override
-        public BaseResponse createResponse() {
-            return new BaseResponse();
-        }
-
-        @Override
-        public Class<BaseResponse> getResponseClass() {
-            return BaseResponse.class;
+        protected TypeToken<BaseResponse<String>> getTypeToken() {
+            return new TypeToken<BaseResponse<String>>(){};
         }
     }
 
     public static class HttpErrorException extends Exception {
-        public HttpErrorException(String detailMessage) {
+        public final int responseCode;
+        public HttpErrorException(String detailMessage, int responseCode) {
             super(detailMessage);
+            this.responseCode = responseCode;
         }
     }
 
@@ -57,6 +55,8 @@ public abstract class WebUtility<RT extends BaseResponse> {
         return activityCounter > 0;
     }
 
+    protected abstract TypeToken<BaseResponse<RT>> getTypeToken();
+
     private static String urlEncode(CharSequence str) {
         try {
             return URLEncoder.encode(str.toString(), "UTF-8");
@@ -65,9 +65,6 @@ public abstract class WebUtility<RT extends BaseResponse> {
             return null;
         }
     }
-
-    public abstract RT createResponse();
-    public abstract Class<RT> getResponseClass();
 
     public static String encodeData(CharSequence... dataVararg) {
         Map<CharSequence, CharSequence> data = new HashMap<>();
@@ -103,35 +100,37 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     private String lastURL;
+    private String lastMethod;
     private String lastData;
     private boolean lastAddSessionId;
 
     public void retry() {
-        execute(lastURL, lastData, lastAddSessionId);
+        execute(lastMethod, lastURL, lastData, lastAddSessionId);
     }
 
     public boolean isLongPoll() {
         return false;
     }
 
-    public void execute(final String url) {
-        execute(url, null);
+    public void execute(final String method, final String url) {
+        execute(method, url, null);
     }
 
-    public void execute(final String url, final String data) {
-        execute(url, data, true);
+    public void execute(final String method, final String url, final String data) {
+        execute(method, url, data, true);
     }
 
-    public void execute(final String url, final String data, final boolean addSessionId) {
+    public void execute(final String method, final String url, final String data, final boolean addSessionId) {
         final String sessionId = addSessionId ? LoginUtility.sessionId : null;
         lastURL = url;
         lastData = data;
+        lastMethod = method;
         lastAddSessionId = addSessionId;
         onPreExecute();
         Thread t = new Thread() {
             @Override
             public void run() {
-                final RT ret = doInBackground(url, data, sessionId);
+                final BaseResponse<RT> ret = doInBackground(method, url, data, sessionId);
                 if(activity == null) {
                     onPostExecute(ret);
                 } else {
@@ -174,19 +173,20 @@ public abstract class WebUtility<RT extends BaseResponse> {
         return networkInfo != null && networkInfo.isConnected();
     }
 
-    protected final RT doInBackground(String url, String data, String sessionId) {
+    protected final BaseResponse<RT> doInBackground(String method, String url, String data, String sessionId) {
         try {
-            return tryDownloadURLInternal(url, data, sessionId);
+            return tryDownloadURLInternal(method, url, data, sessionId);
         } catch (HttpErrorException e) {
-            RT errorObject = createResponse();
-            errorObject.__url = url;
+            BaseResponse<RT> errorObject = new BaseResponse<>();
+            errorObject.url = url;
+            errorObject.statusCode = e.responseCode;
             errorObject.success = false;
             errorObject.message = e.getMessage();
             return errorObject;
         }
     }
 
-    protected final void onPostExecute(RT result) {
+    protected final void onPostExecute(BaseResponse<RT> result) {
         if(!isLongPoll()) {
             activityCounter--;
             _invalidateViewActionsMenu();
@@ -196,11 +196,9 @@ public abstract class WebUtility<RT extends BaseResponse> {
             return;
 
         if (result.success) {
-            if(result.sessionId != null && !result.sessionId.equals(""))
-                LoginUtility.sessionId = result.sessionId;
-            onSuccess(result);
+            onSuccess(result.result);
         } else {
-            if(result.retry && LoginUtility.enabled) {
+            if((result.statusCode == 401 || result.statusCode == 403) && LoginUtility.enabled) {
                 new LoginUtility(this, activity, context).login();
                 return;
             }
@@ -220,45 +218,62 @@ public abstract class WebUtility<RT extends BaseResponse> {
     }
 
     public static void sendChatMessage(final ActionBarActivity activity, final View view, final CharSequence message) {
-        new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("message/send", WebUtility.encodeData("message", message), true);
+        new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("POST", "message", WebUtility.encodeData("message", message));
     }
 
     protected void onSuccess(RT result) { }
 
-    private RT tryDownloadURLInternal(String urlStr, String data, String sessionId)  throws HttpErrorException {
+    private BaseResponse<RT> tryDownloadURLInternal(String method, String urlStr, String data, String sessionId)  throws HttpErrorException {
         InputStream is = null;
 
         try {
-            URL url = new URL(API_ENDPOINT + urlStr);
+            final String useUrl;
+            boolean dataInBody = false;
+            if (isLongPoll()) {
+                if(data == null) {
+                    data = "longPoll=true";
+                } else {
+                    data += "&longPoll=true";
+                }
+            }
+            if (data != null) {
+                if(method.equalsIgnoreCase("put") || method.equalsIgnoreCase("post")) {
+                    dataInBody = true;
+                    useUrl = urlStr;
+                } else {
+                    useUrl = urlStr + "?" + data;
+                }
+            } else {
+                useUrl = urlStr;
+            }
+            URL url = new URL(API_ENDPOINT + useUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(isLongPoll() ? 60000 : 5000 /* milliseconds */);
             conn.setConnectTimeout(5000 /* milliseconds */);
             conn.setDoInput(true);
-            if(sessionId != null) {
+            if (sessionId != null) {
                 conn.setRequestProperty("Authorization", sessionId);
             }
-            if(data != null) {
-                if(isLongPoll())
-                    data += "&longpoll=true";
+            if (dataInBody) {
                 conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
                 OutputStream os = conn.getOutputStream();
                 os.write(data.getBytes("UTF-8"));
                 os.close();
-            } else {
-                conn.setRequestMethod("GET");
             }
+            conn.setRequestMethod(method);
             // Starts the query
             int response = conn.getResponseCode();
-            if(response != 200)
-                throw new HttpErrorException("Response code " + response);
-            is = conn.getInputStream();
-
-            RT result = new Gson().fromJson(new InputStreamReader(is), getResponseClass());
-            result.__url = urlStr;
+            if(response >= 200 && response <= 299) {
+                is = conn.getInputStream();
+            } else {
+                is = conn.getErrorStream();
+            }
+            BaseResponse<RT> result = new Gson().fromJson(new InputStreamReader(is), getTypeToken().getType());
+            result.url = urlStr;
+            result.statusCode = response;
             return result;
         } catch (Exception e) {
-            throw new HttpErrorException(e.getMessage());
+            throw new HttpErrorException(e.getMessage(), 509);
         } finally {
             if (is != null) {
                 try {

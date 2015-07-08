@@ -5,11 +5,8 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
-
-import java.util.regex.Pattern;
 
 public class ListClickableTextView extends TextView {
     public ListClickableTextView(Context context, AttributeSet attrs) {

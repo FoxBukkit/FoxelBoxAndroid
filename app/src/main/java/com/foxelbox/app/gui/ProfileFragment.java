@@ -9,10 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.foxelbox.app.R;
+import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.json.player.profile.ProfileField;
-import com.foxelbox.app.json.player.profile.ProfileResponse;
 import com.foxelbox.app.util.WebUtility;
 import com.foxelbox.app.util.chat.ChatFormatterUtility;
+import com.google.gson.reflect.TypeToken;
 
 public class ProfileFragment extends MainActivity.PlaceholderFragment {
     @Override
@@ -38,27 +39,23 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
 
         String myUUID = "myself";
         Bundle arguments = getArguments();
-        if(arguments.containsKey("uuid"))
+        if(arguments.containsKey("uuid")) {
             myUUID = getArguments().getSerializable("uuid").toString();
+        }
 
-        new WebUtility<ProfileResponse>(getActionBarActivity(), fragmentView.getContext()) {
+        new WebUtility<ProfileField[]>(getActionBarActivity(), fragmentView.getContext()) {
             @Override
-            public ProfileResponse createResponse() {
-                return new ProfileResponse();
-            }
-
-            @Override
-            public Class<ProfileResponse> getResponseClass() {
-                return ProfileResponse.class;
-            }
-
-            @Override
-            protected void onSuccess(ProfileResponse result) {
+            protected void onSuccess(ProfileField[] result) {
                 super.onSuccess(result);
                 items.clear();
-                for(ProfileField field : result.fields)
+                for(ProfileField field : result)
                     items.add(ChatFormatterUtility.formatString(field.title + ": " + field.value, false));
             }
-        }.execute("player/info", WebUtility.encodeData("uuid", myUUID));
+
+            @Override
+            protected TypeToken<BaseResponse<ProfileField[]>> getTypeToken() {
+                return new TypeToken<BaseResponse<ProfileField[]>>(){};
+            }
+        }.execute("GET", "player/" + myUUID);
     }
 }

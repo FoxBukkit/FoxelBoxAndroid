@@ -1,7 +1,6 @@
 package com.foxelbox.app.util.chat;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class LegacyConverter {
     private static final char COLOR_CHAR = '\u00a7';

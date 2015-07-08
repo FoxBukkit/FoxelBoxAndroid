@@ -7,11 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
+import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.json.player.list.PlayerListPlayer;
-import com.foxelbox.app.json.player.list.PlayerListResponse;
 import com.foxelbox.app.json.player.list.PlayerListServer;
 import com.foxelbox.app.util.WebUtility;
 import com.foxelbox.app.util.chat.ChatFormatterUtility;
+import com.google.gson.reflect.TypeToken;
 
 public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     private class PlayerListItem extends CategoricListArrayAdapter.CategoricListItem {
@@ -36,36 +37,31 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     }
 
     private void refreshPlayerList() {
-        new WebUtility<PlayerListResponse>(getActionBarActivity()) {
+        new WebUtility<PlayerListServer[]>(getActionBarActivity()) {
             @Override
-            public PlayerListResponse createResponse() {
-                return new PlayerListResponse();
-            }
-
-            @Override
-            public Class<PlayerListResponse> getResponseClass() {
-                return PlayerListResponse.class;
-            }
-
-            @Override
-            protected void onSuccess(PlayerListResponse result) {
+            protected void onSuccess(PlayerListServer[] result) {
                 final View view = getView();
                 if(view == null) {
                     return;
                 }
                 final CategoricListArrayAdapter items = (CategoricListArrayAdapter)((ListView)view.findViewById(R.id.playerListView)).getAdapter();
                 items.clear();
-                for(PlayerListServer server : result.list) {
+                for(PlayerListServer server : result) {
                     items.add(new CategoricListArrayAdapter.CategoricListHeader(server.server));
                     for(PlayerListPlayer jsonPlayer : server.players) {
                         MCPlayer player = new MCPlayer(jsonPlayer.uuid);
-                        player.setDisplayName(jsonPlayer.display_name);
+                        player.setDisplayName(jsonPlayer.displayName);
                         player.setName(jsonPlayer.name);
                         items.add(new PlayerListItem(player));
                     }
                 }
             }
-        }.execute("player/list");
+
+            @Override
+            protected TypeToken<BaseResponse<PlayerListServer[]>> getTypeToken() {
+                return new TypeToken<BaseResponse<PlayerListServer[]>>(){};
+            }
+        }.execute("GET", "player");
     }
 
     @Override

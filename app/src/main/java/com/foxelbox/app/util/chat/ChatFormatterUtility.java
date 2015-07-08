@@ -1,6 +1,6 @@
 package com.foxelbox.app.util.chat;
 
-import android.text.*;
+import android.text.Spanned;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;

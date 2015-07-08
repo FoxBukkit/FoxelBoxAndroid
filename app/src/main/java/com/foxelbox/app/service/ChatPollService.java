@@ -4,10 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import com.foxelbox.app.json.ChatPollResponse;
+import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.ChatPollData;
 import com.foxelbox.app.json.chat.ChatMessageOut;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -79,7 +81,7 @@ public class ChatPollService extends Service {
         return new ChatBinder();
     }
 
-    private class ChatPollWebUtility extends WebUtility<ChatPollResponse> {
+    private class ChatPollWebUtility extends WebUtility<ChatPollData> {
         private boolean inProgress = false;
 
         private ChatPollWebUtility() {
@@ -97,17 +99,12 @@ public class ChatPollService extends Service {
             }
 
             inProgress = true;
-            execute("message/poll", WebUtility.encodeData("since", "" + lastTime));
+            execute("GET", "message", WebUtility.encodeData("since", "" + lastTime));
         }
 
         @Override
-        public ChatPollResponse createResponse() {
-            return new ChatPollResponse();
-        }
-
-        @Override
-        public Class<ChatPollResponse> getResponseClass() {
-            return ChatPollResponse.class;
+        protected TypeToken<BaseResponse<ChatPollData>> getTypeToken() {
+            return new TypeToken<BaseResponse<ChatPollData>>(){};
         }
 
         @Override
@@ -116,7 +113,7 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        protected void onSuccess(ChatPollResponse result) {
+        protected void onSuccess(ChatPollData result) {
             if(chatPollWebUtility != this) {
                 return;
             }

@@ -16,7 +16,7 @@ import android.widget.EditText;
 import com.crashlytics.android.Crashlytics;
 import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
-import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.player.login.LoginResponseData;
 import com.foxelbox.app.service.ChatPollService;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
@@ -92,7 +92,7 @@ public class MainActivity extends ActionBarActivity
         LoginUtility.enabled = true;
         new LoginUtility(null, this, getApplicationContext()) {
             @Override
-            protected void onSuccess(BaseResponse result) {
+            protected void onSuccess(LoginResponseData result) {
                 super.onSuccess(result);
                 try {
                     myLoginDialog.dismiss();
@@ -171,35 +171,15 @@ public class MainActivity extends ActionBarActivity
                 LoginUtility.password = null;
                 LoginUtility.saveCredentials(this);
             case 7:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = getLayoutInflater();
-                final Dialog logoutDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_logout, null)).setCancelable(false).create();
-                logoutDialog.show();
-
-                new LoginUtility(null, this, getApplicationContext()) {
-                    @Override
-                    protected void onSuccess(BaseResponse result) {
-                        onDone();
-                    }
-
-                    @Override
-                    protected void onError(String message) {
-                        onDone();
-                    }
-
-                    private void onDone() {
-                        try {
-                            logoutDialog.dismiss();
-                            stopService(new Intent(MainActivity.this, ChatPollService.class));
-                            Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.addCategory(Intent.CATEGORY_HOME);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        } catch (Exception e) {
-                            Log.w("foxelbox_exit", "Could not exit", e);
-                        }
-                    }
-                }.logout();
+                try {
+                    stopService(new Intent(MainActivity.this, ChatPollService.class));
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_HOME);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.w("foxelbox_exit", "Could not exit", e);
+                }
                 return;
             default:
                 return;

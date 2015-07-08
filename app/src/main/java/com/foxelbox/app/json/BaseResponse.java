@@ -1,12 +1,13 @@
 package com.foxelbox.app.json;
 
-public class BaseResponse {
+public class BaseResponse<RT> {
     public BaseResponse() { }
 
-    public String __url;
+    public String url;
 
     public String message = null;
-    public boolean retry = false;
+    public int statusCode = 999;
     public boolean success = false;
-    public String sessionId = null;
+
+    public RT result;
 }

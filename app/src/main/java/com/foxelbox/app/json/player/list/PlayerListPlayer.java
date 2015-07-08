@@ -5,5 +5,5 @@ import java.util.UUID;
 public class PlayerListPlayer {
     public UUID uuid;
     public String name;
-    public String display_name;
+    public String displayName;
 }
