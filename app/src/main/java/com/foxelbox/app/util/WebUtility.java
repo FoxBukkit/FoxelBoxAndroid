@@ -47,6 +47,10 @@ public abstract class WebUtility<RT> {
         }
     }
 
+    protected boolean canRetry() {
+        return true;
+    }
+
     protected final Context context;
     protected final ActionBarActivity activity;
 
@@ -198,7 +202,7 @@ public abstract class WebUtility<RT> {
         if (result.success) {
             onSuccess(result.result);
         } else {
-            if((result.statusCode == 401 || result.statusCode == 403) && LoginUtility.enabled) {
+            if(canRetry() && (result.statusCode == 401 || result.statusCode == 403) && LoginUtility.enabled) {
                 new LoginUtility(this, activity, context).login();
                 return;
             }

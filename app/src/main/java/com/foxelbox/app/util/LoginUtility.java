@@ -44,6 +44,11 @@ public class LoginUtility extends WebUtility<LoginResponseData> {
         this.runOnSuccess = runOnSuccess;
     }
 
+    @Override
+    protected boolean canRetry() {
+        return false;
+    }
+
     public void login() {
         if(!enabled)
             return;
