@@ -171,15 +171,35 @@ public class MainActivity extends ActionBarActivity
                 LoginUtility.password = null;
                 LoginUtility.saveCredentials(this);
             case 7:
-                try {
-                    stopService(new Intent(MainActivity.this, ChatPollService.class));
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_HOME);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Log.w("foxelbox_exit", "Could not exit", e);
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = getLayoutInflater();
+                final Dialog logoutDialog = builder.setView(inflater.inflate(R.layout.fragment_dialog_logout, null)).setCancelable(false).create();
+                logoutDialog.show();
+
+                new WebUtility.SimpleWebUtility(this, getApplicationContext()) {
+                    @Override
+                    protected void onSuccess(String result) {
+                        onDone();
+                    }
+
+                    @Override
+                    protected void onError(String message) {
+                        onDone();
+                    }
+
+                    private void onDone() {
+                        try {
+                            logoutDialog.dismiss();
+                            stopService(new Intent(MainActivity.this, ChatPollService.class));
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.w("foxelbox_exit", "Could not exit", e);
+                        }
+                    }
+                }.execute("POST", "login/logout");
                 return;
             default:
                 return;

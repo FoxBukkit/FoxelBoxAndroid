@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,10 @@ public abstract class WebUtility<RT> {
     }
 
     protected boolean canRetry() {
+        return true;
+    }
+
+    protected boolean mayRefreshToken() {
         return true;
     }
 
@@ -125,11 +130,21 @@ public abstract class WebUtility<RT> {
     }
 
     public void execute(final String method, final String url, final String data, final boolean addSessionId) {
-        final String sessionId = addSessionId ? LoginUtility.sessionId : null;
         lastURL = url;
         lastData = data;
         lastMethod = method;
         lastAddSessionId = addSessionId;
+        if(addSessionId && mayRefreshToken()) {
+            long timeUntilExpiry = LoginUtility.expiresAt - ((new Date()).getTime() / 1000L);
+            if(timeUntilExpiry < 1) {
+                new LoginUtility(this, activity, context).login();
+                return;
+            } else if(timeUntilExpiry < 60) {
+                new LoginUtility(this, activity, context).refresh();
+                return;
+            }
+        }
+        final String sessionId = addSessionId ? LoginUtility.sessionId : null;
         onPreExecute();
         Thread t = new Thread() {
             @Override

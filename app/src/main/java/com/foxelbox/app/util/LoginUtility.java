@@ -5,15 +5,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.json.player.login.LoginResponseData;
 import com.google.gson.reflect.TypeToken;
+
+import java.util.Date;
 
 public class LoginUtility extends WebUtility<LoginResponseData> {
     private final WebUtility runOnSuccess;
 
     public static boolean enabled = false;
     static String sessionId = null;
+    static long expiresAt = 0;
     public static String username = null;
     public static String password = null;
 
@@ -49,6 +53,14 @@ public class LoginUtility extends WebUtility<LoginResponseData> {
         return false;
     }
 
+    protected boolean mayRefreshToken() {
+        return false;
+    }
+
+    public void refresh() {
+        execute("POST", "login/refresh");
+    }
+
     public void login() {
         if(!enabled)
             return;
@@ -59,7 +71,9 @@ public class LoginUtility extends WebUtility<LoginResponseData> {
     protected void onSuccess(LoginResponseData result) {
         super.onSuccess(result);
         sessionId = result.sessionId;
-        if(runOnSuccess != null)
+        expiresAt = result.expiresAt;
+        if(runOnSuccess != null) {
             runOnSuccess.retry();
+        }
     }
 }
