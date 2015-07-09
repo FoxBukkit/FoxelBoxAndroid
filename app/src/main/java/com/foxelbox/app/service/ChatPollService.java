@@ -10,10 +10,7 @@ import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class ChatPollService extends Service {
     private static final int MAX_MESSAGES = 100;
@@ -80,6 +77,15 @@ public class ChatPollService extends Service {
         return new ChatBinder();
     }
 
+    private static class ChatMessageComparator implements Comparator<ChatMessageOut> {
+        @Override
+        public int compare(ChatMessageOut lhs, ChatMessageOut rhs) {
+            return lhs.id.compareTo(rhs.id);
+        }
+    }
+
+    private static final ChatMessageComparator chatMessageComparator = new ChatMessageComparator();
+
     private class ChatPollWebUtility extends WebUtility<ChatMessageOut[]> {
         private boolean inProgress = false;
 
@@ -123,12 +129,14 @@ public class ChatPollService extends Service {
                 synchronized (messageCache) {
                     for(ChatMessageOut message : result) {
                         message.formatContents();
-                        messageCache.add(message);
                         myMessageCache.add(message);
                         if(message.id != null && message.id > maxID) {
                             maxID = message.id;
                         }
                     }
+
+                    Collections.sort(myMessageCache, chatMessageComparator);
+                    messageCache.addAll(myMessageCache);
 
                     while(messageCache.size() > MAX_MESSAGES) {
                         messageCache.removeFirst();
