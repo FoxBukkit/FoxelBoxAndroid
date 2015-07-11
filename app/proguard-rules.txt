@@ -17,8 +17,10 @@
 #}
 
 -keepclassmembers class com.foxelbox.app.json.** {
-    public *;
+    *;
 }
+
+-keepattributes Signature
 
 -keepclassmembers class com.foxelbox.app.util.chat.MCHtmlTagHandler$* {
     <init>(org.xml.sax.Attributes);
