@@ -22,7 +22,7 @@ public class ChatMessageOut {
     public final Long id = -1L;
 
     public final UUID context;
-    public final Boolean finalize_context = false;
+    public final Boolean finalizeContext = false;
     public final String type = "text";
 
     public final Integer importance = 0;
