@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.json.chat.ChatMessageOut;
+import com.foxelbox.app.json.chat.MessageReply;
 import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
 import com.google.gson.reflect.TypeToken;
@@ -86,7 +87,7 @@ public class ChatPollService extends Service {
 
     private static final ChatMessageComparator chatMessageComparator = new ChatMessageComparator();
 
-    private class ChatPollWebUtility extends WebUtility<ChatMessageOut[]> {
+    private class ChatPollWebUtility extends WebUtility<MessageReply> {
         private boolean inProgress = false;
 
         private ChatPollWebUtility() {
@@ -108,8 +109,8 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        protected TypeToken<BaseResponse<ChatMessageOut[]>> getTypeToken() {
-            return new TypeToken<BaseResponse<ChatMessageOut[]>>(){};
+        protected TypeToken<BaseResponse<MessageReply>> getTypeToken() {
+            return new TypeToken<BaseResponse<MessageReply>>(){};
         }
 
         @Override
@@ -118,7 +119,7 @@ public class ChatPollService extends Service {
         }
 
         @Override
-        protected void onSuccess(ChatMessageOut[] result) {
+        protected void onSuccess(MessageReply result) {
             if(chatPollWebUtility != this) {
                 return;
             }
@@ -127,12 +128,16 @@ public class ChatPollService extends Service {
                 final LinkedList<ChatMessageOut> myMessageCache = new LinkedList<>();
 
                 synchronized (messageCache) {
-                    for(ChatMessageOut message : result) {
+                    for(ChatMessageOut message : result.messages) {
                         message.formatContents();
                         myMessageCache.add(message);
                         if(message.id != null && message.id > maxID) {
                             maxID = message.id;
                         }
+                    }
+
+                    if(result.latestId > maxID) {
+                        maxID = result.latestId;
                     }
 
                     Collections.sort(myMessageCache, chatMessageComparator);
