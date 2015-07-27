@@ -273,13 +273,13 @@ public abstract class WebUtility<RT> {
             if (sessionId != null) {
                 conn.setRequestProperty("Authorization", sessionId);
             }
+            conn.setRequestMethod(method);
             if (dataInBody) {
                 conn.setDoOutput(true);
                 OutputStream os = conn.getOutputStream();
                 os.write(data.getBytes("UTF-8"));
                 os.close();
             }
-            conn.setRequestMethod(method);
             // Starts the query
             int response = conn.getResponseCode();
             if(response >= 200 && response <= 299) {
