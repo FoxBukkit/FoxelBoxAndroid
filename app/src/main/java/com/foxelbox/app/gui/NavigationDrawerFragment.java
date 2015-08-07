@@ -8,8 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -74,11 +74,11 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getSupportActionBar() {
-        return getActionBarActivity().getSupportActionBar();
+        return getAppCompatActivity().getSupportActionBar();
     }
 
-    private ActionBarActivity getActionBarActivity() {
-        return (ActionBarActivity)getActivity();
+    private AppCompatActivity getAppCompatActivity() {
+        return (AppCompatActivity)getActivity();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
 
-                getActionBarActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getAppCompatActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -161,7 +161,7 @@ public class NavigationDrawerFragment extends Fragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).commit();
                 }
 
-                getActionBarActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getAppCompatActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };
 

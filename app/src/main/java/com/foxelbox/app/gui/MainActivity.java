@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.*;
 import android.widget.EditText;
@@ -22,7 +22,7 @@ import com.foxelbox.app.util.LoginUtility;
 import com.foxelbox.app.util.WebUtility;
 import io.fabric.sdk.android.Fabric;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
@@ -274,8 +274,8 @@ public class MainActivity extends ActionBarActivity
             ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
         }
 
-        ActionBarActivity getActionBarActivity() {
-            return (ActionBarActivity)getActivity();
+        AppCompatActivity getAppCompatActivity() {
+            return (AppCompatActivity)getActivity();
         }
     }
 }

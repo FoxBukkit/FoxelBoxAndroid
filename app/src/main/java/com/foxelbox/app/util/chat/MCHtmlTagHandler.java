@@ -1,8 +1,10 @@
 package com.foxelbox.app.util.chat;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v7.app.ActionBarActivity;
+import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -61,7 +63,7 @@ class MCHtmlTagHandler {
                 return new UnstyledClickableSpan() {
                     @Override
                     public void onClick(View widget) {
-                        ActionBarActivity activity = (ActionBarActivity)widget.getContext();
+                        AppCompatActivity activity = (AppCompatActivity)widget.getContext();
                         EditText chatBar = (EditText)activity.findViewById(R.id.textChatMessage);
                         chatBar.setText(parameter);
                         chatBar.setSelection(parameter.length());
@@ -79,7 +81,21 @@ class MCHtmlTagHandler {
                 return new UnstyledClickableSpan() {
                     @Override
                     public void onClick(View widget) {
-                        WebUtility.sendChatMessage((ActionBarActivity) widget.getContext(), widget, parameter);
+                        WebUtility.sendChatMessage((AppCompatActivity) widget.getContext(), widget, parameter);
+                    }
+                };
+            }
+        });
+
+        onClickSpans.put("open_url", new OnClickSpanFactory() {
+            @Override
+            public UnstyledClickableSpan newSpan(final String parameter) {
+                return new UnstyledClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        AppCompatActivity activity = (AppCompatActivity)widget.getContext();
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(parameter));
+                        activity.startActivity(browserIntent);
                     }
                 };
             }

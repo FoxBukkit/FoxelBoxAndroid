@@ -43,7 +43,7 @@ public class ProfileFragment extends MainActivity.PlaceholderFragment {
             myUUID = getArguments().getSerializable("uuid").toString();
         }
 
-        new WebUtility<ProfileField[]>(getActionBarActivity(), fragmentView.getContext()) {
+        new WebUtility<ProfileField[]>(getAppCompatActivity(), fragmentView.getContext()) {
             @Override
             protected void onSuccess(ProfileField[] result) {
                 super.onSuccess(result);

@@ -3,7 +3,7 @@ package com.foxelbox.app.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -26,11 +26,11 @@ public abstract class WebUtility<RT> {
     public static final String API_ENDPOINT = "https://api.foxelbox.com/v2/";
 
     public static class SimpleWebUtility extends WebUtility<String> {
-        public SimpleWebUtility(ActionBarActivity activity) {
+        public SimpleWebUtility(AppCompatActivity activity) {
             super(activity);
         }
 
-        public SimpleWebUtility(ActionBarActivity activity, Context context) {
+        public SimpleWebUtility(AppCompatActivity activity, Context context) {
             super(activity, context);
         }
 
@@ -57,7 +57,7 @@ public abstract class WebUtility<RT> {
     }
 
     protected final Context context;
-    protected final ActionBarActivity activity;
+    protected final AppCompatActivity activity;
 
     private static volatile int activityCounter = 0;
     public static boolean isRunning() {
@@ -98,12 +98,12 @@ public abstract class WebUtility<RT> {
         return result.toString();
     }
 
-    public WebUtility(ActionBarActivity activity) {
+    public WebUtility(AppCompatActivity activity) {
         this.context = activity.getApplicationContext();
         this.activity = activity;
     }
 
-    public WebUtility(ActionBarActivity activity, Context context) {
+    public WebUtility(AppCompatActivity activity, Context context) {
         this.context = context;
         this.activity = activity;
     }
@@ -236,7 +236,7 @@ public abstract class WebUtility<RT> {
             Toast.makeText(context, "ERROR: " + message, Toast.LENGTH_SHORT).show();
     }
 
-    public static void sendChatMessage(final ActionBarActivity activity, final View view, final CharSequence message) {
+    public static void sendChatMessage(final AppCompatActivity activity, final View view, final CharSequence message) {
         new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("POST", "message", WebUtility.encodeData("message", message));
     }
 

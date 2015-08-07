@@ -121,6 +121,6 @@ public class ChatFragment extends MainActivity.PlaceholderFragment {
         EditText msgTextField = ((EditText)view.findViewById(R.id.textChatMessage));
         final CharSequence message = msgTextField.getText();
         msgTextField.setText("");
-        WebUtility.sendChatMessage(getActionBarActivity(), view, message);
+        WebUtility.sendChatMessage(getAppCompatActivity(), view, message);
     }
 }

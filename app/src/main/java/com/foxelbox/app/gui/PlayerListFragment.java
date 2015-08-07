@@ -37,7 +37,7 @@ public class PlayerListFragment extends MainActivity.PlaceholderFragment {
     }
 
     private void refreshPlayerList() {
-        new WebUtility<PlayerListServer[]>(getActionBarActivity()) {
+        new WebUtility<PlayerListServer[]>(getAppCompatActivity()) {
             @Override
             protected void onSuccess(PlayerListServer[] result) {
                 final View view = getView();

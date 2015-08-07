@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import com.foxelbox.app.json.BaseResponse;
 import com.foxelbox.app.json.player.login.LoginResponseData;
 import com.google.gson.reflect.TypeToken;
-
-import java.util.Date;
 
 public class LoginUtility extends WebUtility<LoginResponseData> {
     private final WebUtility runOnSuccess;
@@ -43,7 +40,7 @@ public class LoginUtility extends WebUtility<LoginResponseData> {
         PreferenceManager.getDefaultSharedPreferences(activity).edit().putString(PREF_USERNAME, username).putString(PREF_PASSWORD, password).commit();
     }
 
-    public LoginUtility(WebUtility runOnSuccess, ActionBarActivity activity, Context context) {
+    public LoginUtility(WebUtility runOnSuccess, AppCompatActivity activity, Context context) {
         super(activity, context);
         this.runOnSuccess = runOnSuccess;
     }
