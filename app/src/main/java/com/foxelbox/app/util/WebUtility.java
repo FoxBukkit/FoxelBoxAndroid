@@ -242,6 +242,11 @@ public abstract class WebUtility<RT> {
 
     protected void onSuccess(RT result) { }
 
+    private static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
     private BaseResponse<RT> tryDownloadURLInternal(String method, String urlStr, String data, String sessionId)  throws HttpErrorException {
         InputStream is = null;
 
@@ -287,11 +292,14 @@ public abstract class WebUtility<RT> {
             } else {
                 is = conn.getErrorStream();
             }
-            BaseResponse<RT> result = new Gson().fromJson(new InputStreamReader(is), getTypeToken().getType());
+            String readData = convertStreamToString(is);
+            Log.d("ff", readData);
+            BaseResponse<RT> result = new Gson().fromJson(readData, getTypeToken().getType());
             result.url = urlStr;
             result.statusCode = response;
             return result;
         } catch (Exception e) {
+            Log.w("fb_http_error", "HTTP error", e);
             throw new HttpErrorException(e.getMessage(), 509);
         } finally {
             if (is != null) {
