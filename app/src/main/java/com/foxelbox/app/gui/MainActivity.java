@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.EditText;
 import com.crashlytics.android.Crashlytics;
+import com.foxelbox.app.CAUtility;
 import com.foxelbox.app.R;
 import com.foxelbox.app.data.MCPlayer;
 import com.foxelbox.app.json.player.login.LoginResponseData;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CAUtility.initialize(getApplication());
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 

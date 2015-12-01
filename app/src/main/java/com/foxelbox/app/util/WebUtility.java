@@ -7,13 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import com.foxelbox.app.CAUtility;
 import com.foxelbox.app.json.BaseResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -272,6 +273,9 @@ public abstract class WebUtility<RT> {
             }
             URL url = new URL(API_ENDPOINT + useUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            if(conn instanceof HttpsURLConnection) {
+                CAUtility.upgrade((HttpsURLConnection)conn);
+            }
             conn.setReadTimeout(isLongPoll() ? 60000 : 5000 /* milliseconds */);
             conn.setConnectTimeout(5000 /* milliseconds */);
             conn.setDoInput(true);
@@ -293,7 +297,6 @@ public abstract class WebUtility<RT> {
                 is = conn.getErrorStream();
             }
             String readData = convertStreamToString(is);
-            Log.d("ff", readData);
             BaseResponse<RT> result = new Gson().fromJson(readData, getTypeToken().getType());
             result.url = urlStr;
             result.statusCode = response;
