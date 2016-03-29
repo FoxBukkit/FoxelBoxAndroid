@@ -4,7 +4,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.1'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -19,7 +19,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '23.0.3'
 
     signingConfigs {
         release {
@@ -33,8 +33,8 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 40
-        versionName '1.3.4b'
+        versionCode 41
+        versionName '1.3.4c'
     }
 
     buildTypes {

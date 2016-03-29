@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 import com.foxelbox.app.CAUtility;
 import com.foxelbox.app.json.BaseResponse;
+import com.foxelbox.app.json.chat.SentMessageReply;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -38,6 +39,21 @@ public abstract class WebUtility<RT> {
         @Override
         protected TypeToken<BaseResponse<String>> getTypeToken() {
             return new TypeToken<BaseResponse<String>>(){};
+        }
+    }
+
+    public static class ChatWebUtility extends WebUtility<SentMessageReply> {
+        public ChatWebUtility(AppCompatActivity activity) {
+            super(activity);
+        }
+
+        public ChatWebUtility(AppCompatActivity activity, Context context) {
+            super(activity, context);
+        }
+
+        @Override
+        protected TypeToken<BaseResponse<SentMessageReply>> getTypeToken() {
+            return new TypeToken<BaseResponse<SentMessageReply>>(){};
         }
     }
 
@@ -238,7 +254,7 @@ public abstract class WebUtility<RT> {
     }
 
     public static void sendChatMessage(final AppCompatActivity activity, final View view, final CharSequence message) {
-        new WebUtility.SimpleWebUtility(activity, view.getContext()).execute("POST", "message", WebUtility.encodeData("message", message));
+        new WebUtility.ChatWebUtility(activity, view.getContext()).execute("POST", "message", WebUtility.encodeData("message", message));
     }
 
     protected void onSuccess(RT result) { }
