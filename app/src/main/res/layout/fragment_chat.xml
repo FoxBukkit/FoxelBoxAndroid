@@ -16,14 +16,15 @@
         android:layout_alignParentRight="true">
 
         <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textChatMessage"
-            android:layout_weight="5000"
-            android:hint="@string/message_string"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:inputType="textShortMessage|textCapSentences|textAutoComplete|textAutoCorrect"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textChatMessage"
+                android:layout_weight="5000"
+                android:hint="@string/message_string"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:inputType="textShortMessage|textCapSentences|textAutoComplete|textAutoCorrect"
+                android:maxLength="240"/>
 
         <Button
             style="?android:attr/buttonStyleSmall"
